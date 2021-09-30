@@ -14,7 +14,7 @@ def create_app(config_file=config.__file__):
     models.DB.init_app(app)
 
     from . import migrate
-    migrate.MG.init_app(app, models.DB, directory=f'{__name__}/migrations')
+    migrate.MG.init_app(app, models.DB)
 
     from . import schemas
     schemas.MM.init_app(app)

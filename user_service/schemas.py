@@ -65,11 +65,11 @@ class UserDeletion(BaseUserRequest):
 # region User responses
 
 class AccessToken(APIResponse):
-    access_token = MM.String(attribute='accessToken')
+    access_token = MM.String(data_key='accessToken')  # TODO data_key/attribute
 
 
 class TokenPair(APIResponse):
-    access_token = MM.String(attribute='accessToken')
-    refresh_token = MM.String(attribute='refreshToken')
+    access_token = MM.String(data_key='accessToken')
+    refresh_token = MM.String(data_key='refreshToken')
 
 # endregion

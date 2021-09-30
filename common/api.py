@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 from marshmallow import ValidationError
 from werkzeug.exceptions import BadRequest, HTTPException
 
@@ -50,7 +50,7 @@ def produces(schema: schemas.Base, status=200):
         @wraps(handler)
         def wrapper(*args, **kwargs):
             body = handler(*args, **kwargs)
-            return jsonify(schema.load(body)), status
+            return schema.jsonify(body), status
 
         wrapper.produces = schema
         wrapper.status = status

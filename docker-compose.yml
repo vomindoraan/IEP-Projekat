@@ -1,24 +1,29 @@
 version: '3'
 
+
 services:
   user-service:
     build:
       context: .
-      dockerfile: ./user_service/Dockerfile
+      args:
+        - SERVICE=user_service
     image: user-service
     depends_on:
       - user-service-migration
     environment:
       - DB_HOST=authdb
+      - SERVER_PORT=9010
     networks:
       - auth-net
     ports:
-      - 9000:9000
+      - 9010:9010
+    command: python -m user_service
 
   user-service-migration:
     build:
       context: .
-      dockerfile: ./user_service/Dockerfile
+      args:
+        - SERVICE=user_service
     image: user-service
     depends_on:
       authdb:
@@ -28,6 +33,96 @@ services:
     networks:
       - auth-net
     command: python -m user_service.migrate
+
+
+  admin-service:
+    build:
+      context: .
+      args:
+        - SERVICE=admin_service
+    image: admin-service
+    depends_on:
+      - admin-service-migration
+    environment:
+      - DB_HOST=votedb
+      - SERVER_PORT=9011
+    networks:
+      - vote-net
+    ports:
+      - 9011:9011
+    command: python -m admin_service
+
+  admin-service-migration:
+    build:
+      context: .
+      args:
+        - SERVICE=admin_service
+    image: admin-service
+    depends_on:
+      authdb:
+        condition: service_healthy
+    environment:
+      - DB_HOST=votedb
+    networks:
+      - vote-net
+    command: python -m admin_service.migrate
+
+  lookup:
+    build:
+      context: .
+      args:
+        - SERVICE=admin_service
+    image: admin-service
+    depends_on:
+      - admin-service-migration
+    environment:
+      - DB_HOST=votedb
+      - SERVER_PORT=9011
+    networks:
+      - vote-net
+    ports:
+      - 9021:9021
+    command: python -m admin_service.lookup
+
+
+  voting-service:
+    build:
+      context: .
+      args:
+        - SERVICE=voting_service
+    image: voting-service
+    depends_on:
+      - redis
+    environment:
+      - SERVER_PORT=9012
+    networks:
+      - auth-net
+    ports:
+      - 9012:9012
+    command: python -m voting_service
+
+  voting-daemon:
+    build:
+      context: .
+      args:
+        - SERVICE=voting_service
+    image: voting-daemon
+    depends_on:
+      - votedb
+      - redis
+    networks:
+      - vote-net
+      - redis-net
+    command: python -m voting_service.daemon
+
+
+  redis:
+    image: redis
+    restart: always
+    networks:
+      - redis-net
+    ports:
+      - 6389:6379
 
   authdb:
     image: mysql
@@ -39,21 +134,44 @@ services:
       timeout: 5s
       retries: 10
     volumes:
-      - authdb-data:/var/lib/mysql
+      - authdb-vol:/var/lib/mysql
     networks:
       - auth-net
     ports:
       - 3306:3306
 
+  votedb:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+    volumes:
+      - votedb-vol:/var/lib/mysql
+    networks:
+      - vote-net
+    ports:
+      - 3316:3306
+
+
   adminer:
     image: adminer
     networks:
       - auth-net
+      - vote-net
     ports:
-      - 8080:8080
+      - 8090:8080
+
 
 volumes:
-  authdb-data:
+  authdb-vol:
+  votedb-vol:
+
 
 networks:
   auth-net:
+  vote-net:
+  redis-net:

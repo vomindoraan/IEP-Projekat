@@ -6,7 +6,7 @@ MG = Migrate()
 
 
 if __name__ == '__main__':
-    from . import create_app, models
+    from . import create_app
 
     app = create_app()
 
@@ -21,13 +21,3 @@ if __name__ == '__main__':
 
         migrate(message="Production migration")
         upgrade()
-
-        admin = models.User(
-            jmbg="0000000000000",
-            email="admin@admin.com",
-            password="1",
-            forename="admin",
-            surname="admin",
-        )
-        models.DB.session.add(admin)
-        models.DB.session.commit()

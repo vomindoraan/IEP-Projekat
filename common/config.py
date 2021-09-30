@@ -8,6 +8,11 @@ from common.utils import parse_bool
 ENV = os.getenv('FLASK_ENV', 'development')
 DEBUG = parse_bool(os.getenv('FLASK_DEBUG', True))
 
+# Server config
+SERVER_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
+SERVER_PORT = int(os.getenv('SERVER_PORT', 9000))
+SERVER_NAME = f'{SERVER_HOST}:{SERVER_PORT}'
+
 # JWT config
 JWT_SECRET_KEY = 'JWT_SECRET_KEY'
 JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)

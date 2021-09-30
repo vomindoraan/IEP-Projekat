@@ -17,7 +17,7 @@ service_bp = Blueprint('users', __name__)
 @consumes(schemas.UserRegistration.ONE)
 @produces(schemas.EmptyResponse.ONE)
 def register_user(data):
-    if User.query.filter(User.email == data['email']).first():
+    if DB.session.query(User).filter(User.email == data['email']).first():
         raise Conflict("Email already exists.")
 
     user = User(**data)
@@ -29,7 +29,7 @@ def register_user(data):
 @consumes(schemas.UserLogin.ONE)
 @produces(schemas.TokenPair.ONE)
 def login_user(data):
-    user = User.query.filter(
+    user = DB.session.query(User).filter(
         and_(User.email == data['email'], User.password == data['password'])
     ).first()
     if not user:
@@ -62,7 +62,7 @@ def refresh_token():
 @produces(schemas.EmptyResponse.ONE)
 @jwt_required()
 def delete_user(data):
-    user = User.query.filter(User.email == data['email']).first()
+    user = DB.session.query(User).filter(User.email == data['email']).first()
     if not user:
         raise NotFound("Unknown user.")
 

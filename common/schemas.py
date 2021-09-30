@@ -1,10 +1,13 @@
 import ujson
+
 from flask_marshmallow import Marshmallow
 from marshmallow import EXCLUDE, RAISE
 
 
 MM = Marshmallow()
 
+
+# region Base schemas
 
 class BaseMeta(type(MM.Schema)):
     def __init__(cls, name, bases, attrs):
@@ -18,6 +21,8 @@ class Base(MM.Schema, metaclass=BaseMeta):
         dateformat = 'iso'
         render_module = ujson
         unknown = EXCLUDE
+
+# endregion
 
 
 # region Mixins
