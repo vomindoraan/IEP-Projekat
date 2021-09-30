@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: ./user_service/Dockerfile
+    image: user-service
+    depends_on:
+      - user-service-migration
+    environment:
+      - DB_HOST=authdb
+    networks:
+      - auth-net
+    ports:
+      - 9000:9000
+
+  user-service-migration:
+    build:
+      context: .
+      dockerfile: ./user_service/Dockerfile
+    image: user-service
+    depends_on:
+      authdb:
+        condition: service_healthy
+    environment:
+      - DB_HOST=authdb
+    networks:
+      - auth-net
+    command: python -m user_service.migrate
+
+  authdb:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+    volumes:
+      - authdb-data:/var/lib/mysql
+    networks:
+      - auth-net
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer
+    networks:
+      - auth-net
+    ports:
+      - 8080:8080
+
+volumes:
+  authdb-data:
+
+networks:
+  auth-net:
