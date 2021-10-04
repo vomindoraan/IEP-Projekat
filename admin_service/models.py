@@ -32,6 +32,6 @@ class Vote(DB.Model):
 
     id = DB.Column(DB.Integer, primary_key=True)
     poll_number = DB.Column(DB.Integer, nullable=False)
-    invalid = DB.Column(DB.String)
+    invalid = DB.Column(DB.String(256))
 
     election_id = DB.Column(DB.Integer, DB.ForeignKey('elections.id'))

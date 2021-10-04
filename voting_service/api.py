@@ -2,7 +2,6 @@ import csv
 import io
 
 import redis
-from flask import request
 from flask_jwt_extended import jwt_required
 
 from common.api import *
@@ -14,21 +13,21 @@ service_bp = Blueprint('voting', __name__)
 
 @service_bp.post('/vote')
 @jwt_required()
+@produces(schemas.EmptyResponse.ONE)
 def vote():
     try:
         f = request.files['file']
         stream = io.StringIO(f.stream.read().decode('utf-8'))
         csv_in = csv.reader(stream)
-    except Exception as e:
+    except Exception:
         return BadRequest("Field file missing.")
 
     content = []
-    for i, line in enumerate(csv_in):
-        if len(line.split()) != 2:
+    for i, values in enumerate(csv_in):
+        if len(values) != 2:
             return BadRequest(f"Incorrect number of values on line {i}.")
-        content.append(line)
+        content.append(values)
 
     r = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
-    pubsub = r.pubsub()
-    for line in content:
-        pubsub.publish(config.REDIS_VOTES_LIST, line)
+    for values in content:
+        r.publish(config.REDIS_VOTES_LIST, ' '.join(values))

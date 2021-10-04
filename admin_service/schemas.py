@@ -31,6 +31,10 @@ class Participant(BaseParticipantResponse):
     name = MM.auto_field()
     individual = MM.auto_field()
 
+# TODO: Replace with envelope
+class Participants(APIResponse):
+    participants = MM.Nested(Participant, many=True)
+
 # endregion
 
 
@@ -70,6 +74,9 @@ class Election(SQLAlchemyMixin, APIResponse):
     individual = MM.auto_field()
     participants = MM.Nested(Participant, many=True)
 
+class Elections(APIResponse):
+    elections = MM.Nested(Election, many=True)
+
 # endregion
 
 
@@ -83,6 +90,7 @@ class ResultsQuery(APIQuery):
 
 # region Results responses
 
+# TODO: Replace with envelope
 class ParticipantResult(Base):
     pass
 

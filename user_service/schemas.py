@@ -1,5 +1,5 @@
 from marshmallow import ValidationError
-from marshmallow.validate import And, Length, Regexp
+from marshmallow.validate import And, Email, Length, Regexp
 
 from common.schemas import *
 from . import models
@@ -45,19 +45,19 @@ class BaseUserRequest(SQLAlchemyMixin, APIRequest):
 
 class UserRegistration(BaseUserRequest):
     jmbg = MM.auto_field(validate=validate_jmbg)
-    email = MM.auto_field()
+    email = MM.auto_field(validate=Email())
     password = MM.auto_field(validate=validate_password)
     forename = MM.auto_field()
     surname = MM.auto_field()
 
 
 class UserLogin(BaseUserRequest):
-    email = MM.auto_field()
+    email = MM.auto_field(validate=Email())
     password = MM.auto_field()
 
 
 class UserDeletion(BaseUserRequest):
-    email = MM.auto_field()
+    email = MM.auto_field(validate=Email())
 
 # endregion
 

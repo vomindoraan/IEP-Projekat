@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "37436851-cdfb-488f-9a3e-9d939163f4c5",
+		"_postman_id": "0833c892-3136-4dbf-ae80-e266f28df87a",
 		"name": "New Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -231,39 +231,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"start\": \"2019-09-30T00:00:00Z\",\r\n    \"end\": \"2020-09-30T00:00:00:Z\"\r\n}"
-				},
-				"url": {
-					"raw": "{{admin_url}}/createElection",
-					"host": [
-						"{{admin_url}}"
-					],
-					"path": [
-						"createElection"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "createElection Copy",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer {{accessToken}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"start\": \"2019-09-30T00:00:00Z\",\r\n    \"end\": \"2020-09-30T00:00:00:Z\"\r\n}"
+					"raw": "{\r\n    \"start\": \"2019-09-30T00:00:00Z\",\r\n    \"end\": \"2020-09-30T00:00:00Z\",\r\n    \"individual\": 0,\r\n    \"participants\": [2,3]\r\n}"
 				},
 				"url": {
 					"raw": "{{admin_url}}/createElection",
@@ -338,6 +306,38 @@
 			"response": []
 		},
 		{
+			"name": "vote",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"start\": \"2019-09-30T00:00:00Z\",\r\n    \"end\": \"2020-09-30T00:00:00Z\",\r\n    \"individual\": 0,\r\n    \"participants\": [2,3]\r\n}"
+				},
+				"url": {
+					"raw": "{{admin_url}}/createElection",
+					"host": [
+						"{{admin_url}}"
+					],
+					"path": [
+						"createElection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "lookup",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -356,18 +356,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{lookup_url}}/lookup?name=ik",
+					"raw": "{{admin_url}}/getResults",
 					"host": [
-						"{{lookup_url}}"
+						"{{admin_url}}"
 					],
 					"path": [
-						"lookup"
-					],
-					"query": [
-						{
-							"key": "name",
-							"value": "ik"
-						}
+						"getResults"
 					]
 				}
 			},
@@ -413,7 +407,7 @@
 		},
 		{
 			"key": "lookup_url",
-			"value": "http://0.0.0.0:9013"
+			"value": "http://0.0.0.0:9021"
 		}
 	]
 }

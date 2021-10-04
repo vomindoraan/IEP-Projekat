@@ -1,7 +1,8 @@
 import ujson
 
+from common.utils import filter_values
 from flask_marshmallow import Marshmallow
-from marshmallow import EXCLUDE, RAISE
+from marshmallow import EXCLUDE, RAISE, pre_load
 
 
 MM = Marshmallow()
@@ -21,6 +22,10 @@ class Base(MM.Schema, metaclass=BaseMeta):
         dateformat = 'iso'
         render_module = ujson
         unknown = EXCLUDE
+
+    @pre_load
+    def treat_empty_string_as_missing(self, data, **kwargs):
+        return filter_values(lambda v: v != '', data)
 
 # endregion
 

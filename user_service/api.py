@@ -3,7 +3,6 @@ from flask_jwt_extended import (
     jwt_required,
 )
 from sqlalchemy import and_
-from werkzeug.exceptions import Conflict, NotFound, Unauthorized
 
 from common.api import *
 from . import schemas
@@ -18,7 +17,7 @@ service_bp = Blueprint('users', __name__)
 @produces(schemas.EmptyResponse.ONE)
 def register_user(data):
     if DB.session.query(User).filter(User.email == data['email']).first():
-        raise Conflict("Email already exists.")
+        raise BadRequest("Email already exists.")
 
     user = User(**data)
     DB.session.add(user)
@@ -33,12 +32,13 @@ def login_user(data):
         and_(User.email == data['email'], User.password == data['password'])
     ).first()
     if not user:
-        raise Unauthorized("Invalid credentials.")
+        raise BadRequest("Invalid credentials.")
 
     ac = {
+        'jmbg':     user.jmbg,
         'forename': user.forename,
         'surname':  user.surname,
-        'is_admin': user.is_admin,
+        'roles':    'admin' if user.is_admin else None,
     }
     return {
         'access_token': create_access_token(identity=user.email, additional_claims=ac),
@@ -47,24 +47,31 @@ def login_user(data):
 
 
 @service_bp.post('/refresh')
-@produces(schemas.AccessToken.ONE)
 @jwt_required(refresh=True)
+@produces(schemas.AccessToken.ONE)
 def refresh_token():
     identity = get_jwt_identity()
     claims = get_jwt()
+
+    ac = {
+        'jmbg':     claims['jmbg'],
+        'forename': claims['forename'],
+        'surname':  claims['surname'],
+        'roles':    claims['roles'],
+    }
     return {
-        'access_token': create_access_token(identity=identity, additional_claims=claims),
+        'access_token': create_access_token(identity=identity, additional_claims=ac),
     }
 
 
 @service_bp.post('/delete')
+@jwt_required()
 @consumes(schemas.UserDeletion.ONE)
 @produces(schemas.EmptyResponse.ONE)
-@jwt_required()
 def delete_user(data):
     user = DB.session.query(User).filter(User.email == data['email']).first()
     if not user:
-        raise NotFound("Unknown user.")
+        raise BadRequest("Unknown user.")
 
     DB.session.delete(user)
     DB.session.commit()
