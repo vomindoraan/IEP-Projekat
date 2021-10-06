@@ -25,12 +25,12 @@ def validate_jmbg(v):
     if checksum != m:
         raise error
 
+validate_email = Email(error="Invalid email.")
 
 validate_password = And(
     Length(min=8, max=256),
-    Regexp(r'^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[a-z]).+',
-           error="Must contain at least one digit, one uppercase and "
-                 "one lowercase letter."),
+    Regexp(r'^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[a-z]).+'),
+    error="Invalid password."
 )
 
 # endregion
@@ -45,19 +45,19 @@ class BaseUserRequest(SQLAlchemyMixin, APIRequest):
 
 class UserRegistration(BaseUserRequest):
     jmbg = MM.auto_field(validate=validate_jmbg)
-    email = MM.auto_field(validate=Email())
+    email = MM.auto_field(validate=validate_email)
     password = MM.auto_field(validate=validate_password)
     forename = MM.auto_field()
     surname = MM.auto_field()
 
 
 class UserLogin(BaseUserRequest):
-    email = MM.auto_field(validate=Email())
+    email = MM.auto_field(validate=validate_email)
     password = MM.auto_field()
 
 
 class UserDeletion(BaseUserRequest):
-    email = MM.auto_field(validate=Email())
+    email = MM.auto_field(validate=validate_email)
 
 # endregion
 
@@ -65,7 +65,7 @@ class UserDeletion(BaseUserRequest):
 # region User responses
 
 class AccessToken(APIResponse):
-    access_token = MM.String(data_key='accessToken')  # TODO data_key/attribute
+    access_token = MM.String(data_key='accessToken')
 
 
 class TokenPair(APIResponse):

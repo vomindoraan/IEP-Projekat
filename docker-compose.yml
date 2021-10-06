@@ -1,38 +1,42 @@
 version: '3'
 
-
 services:
-  user-service:
+  # region Authentication
+
+  auth-service:
     build:
       context: .
       args:
-        - SERVICE=user_service
-    image: user-service
+        - SERVICE=auth_service
+    image: auth-service
     depends_on:
-      - user-service-migration
-    environment:
-      - DB_HOST=authdb
+      - auth-service-migration
     networks:
       - auth-net
     ports:
       - 9000:9000
-    command: python -m user_service
+    environment:
+      - DB_HOST=authdb
+    command: python -m auth_service
 
-  user-service-migration:
+  auth-service-migration:
     build:
       context: .
       args:
-        - SERVICE=user_service
-    image: user-service
+        - SERVICE=auth_service
+    image: auth-service
     depends_on:
       authdb:
         condition: service_healthy
-    environment:
-      - DB_HOST=authdb
     networks:
       - auth-net
-    command: python -m user_service.migrate
+    environment:
+      - DB_HOST=authdb
+    command: python -m auth_service.migrate
 
+  # endregion
+
+  # region Administration
 
   admin-service:
     build:
@@ -42,12 +46,12 @@ services:
     image: admin-service
     depends_on:
       - admin-service-migration
-    environment:
-      - DB_HOST=votedb
     networks:
       - vote-net
     ports:
       - 9010:9000
+    environment:
+      - DB_HOST=votedb
     command: python -m admin_service
 
   admin-service-migration:
@@ -59,13 +63,13 @@ services:
     depends_on:
       authdb:
         condition: service_healthy
-    environment:
-      - DB_HOST=votedb
     networks:
       - vote-net
+    environment:
+      - DB_HOST=votedb
     command: python -m admin_service.migrate
 
-  lookup:
+  lookup-service:
     build:
       context: .
       args:
@@ -73,14 +77,17 @@ services:
     image: admin-service
     depends_on:
       - admin-service-migration
-    environment:
-      - DB_HOST=votedb
     networks:
       - vote-net
     ports:
       - 9011:9000
+    environment:
+      - DB_HOST=votedb
     command: python -m admin_service.lookup
 
+  # endregion
+
+  # region Voting
 
   voting-service:
     build:
@@ -91,7 +98,7 @@ services:
     depends_on:
       - redis
     networks:
-      - auth-net
+      - redis-net
     ports:
       - 9020:9000
     command: python -m voting_service
@@ -110,6 +117,9 @@ services:
       - redis-net
     command: python -m voting_service.daemon
 
+  # endregion
+
+  # region Persistence
 
   redis:
     image: redis
@@ -122,8 +132,6 @@ services:
   authdb:
     image: mysql
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 5s
@@ -134,12 +142,12 @@ services:
       - auth-net
     ports:
       - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
 
   votedb:
     image: mysql
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       timeout: 5s
@@ -150,7 +158,8 @@ services:
       - vote-net
     ports:
       - 3316:3306
-
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
 
   adminer:
     image: adminer
@@ -160,11 +169,11 @@ services:
     ports:
       - 8080:8080
 
+  # endregion
 
 volumes:
   authdb-vol:
   votedb-vol:
-
 
 networks:
   auth-net:

@@ -9,6 +9,7 @@ if __name__ == '__main__':
     from sqlalchemy_utils import create_database, database_exists
 
     from . import create_app
+    from .models import DB, User
 
 
     app = create_app()
@@ -24,3 +25,14 @@ if __name__ == '__main__':
 
         migrate(message="Production migration")
         upgrade()
+
+        if not User.query.filter(User.email == "admin@admin.com").first():
+            admin = User(
+                jmbg="0000000000000",
+                email="admin@admin.com",
+                password="1",
+                forename="admin",
+                surname="admin",
+            )
+            DB.session.add(admin)
+            DB.session.commit()

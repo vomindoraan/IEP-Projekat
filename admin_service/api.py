@@ -1,11 +1,10 @@
 from datetime import datetime
 
 from flask_jwt_extended import jwt_required
-from werkzeug.exceptions import BadRequest
 
 from common.api import *
 from . import schemas
-from .models import DB, Participant, Election, Vote
+from .models import DB, Election, Participant, Vote
 
 
 service_bp = Blueprint('admin', __name__)
@@ -24,11 +23,9 @@ def create_participant(data):
 
 @service_bp.get('/getParticipants')
 @jwt_required()
-@produces(schemas.Participants.ONE)  # TODO: Replace with envelope
+@produces(schemas.Participant.MANY)
 def get_participants():
-    return {
-        'participants': DB.session.query(Participant).all(),
-    }
+    return Participant.query.all()
 
 
 @service_bp.post('/createElection')
@@ -45,7 +42,7 @@ def create_election(data):
     participants = []
     poll_numbers = []
     for i, pid in enumerate(participant_ids, start=1):
-        p = DB.session.query(Participant).get(pid)
+        p = Participant.query.get(pid)
         if not p or data['individual'] != p.individual:
             raise BadRequest("Invalid participants.")
 
@@ -65,11 +62,9 @@ def create_election(data):
 
 @service_bp.get('/getElections')
 @jwt_required()
-@produces(schemas.Elections.ONE)  # TODO: Replace with envelope
+@produces(schemas.Election.MANY)
 def get_elections():
-    return {
-        'elections': DB.session.query(Election).all(),
-    }
+    return Election.query.all()
 
 
 @service_bp.get('/getResults')
@@ -78,16 +73,14 @@ def get_elections():
 @produces(schemas.Results.ONE)
 def get_results(data):
     eid = data['election_id']
-    e = DB.session.query(Election).get(eid)
-    if not e:
-        raise BadRequest(f"Election does not exist.")
-    if e.end > datetime.now(tz=e.end.tzinfo):
-        raise BadRequest(f"Election is ongoing.")
+    if not (e := Election.query.get(eid)):
+        raise BadRequest("Election does not exist.")
+    elif e.end > datetime.now(tz=e.end.tzinfo):
+        raise BadRequest("Election is ongoing.")
 
-    # for p in DB.session.query(Participant).filter(Participant.election_id == eid):
+    # for p in Participant.query.filter(Participant.election_id == eid):
 
-
-    invalid_votes = DB.session.query(Vote).filter(Vote.invalid is not None)
+    invalid_votes = Vote.query.filter(Vote.invalid is not None)
 
     return {
         'invalid_votes': invalid_votes,
@@ -102,8 +95,7 @@ lookup_bp = Blueprint('lookup', __name__)
 @produces(schemas.Election.MANY)
 def lookup(data):
     return (
-        DB.session
-        .query(Election)
+        Election.query
         .join(Election.participants)
         .filter(Participant.name.contains(data['name']))
     )

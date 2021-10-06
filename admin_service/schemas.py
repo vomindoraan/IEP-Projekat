@@ -1,5 +1,6 @@
-from common.schemas import *
 from marshmallow import ValidationError, validates_schema
+
+from common.schemas import *
 from . import models
 
 
@@ -18,8 +19,9 @@ class ParticipantCreation(SQLAlchemyMixin, APIRequest):
 # region Participant responses
 
 class BaseParticipantResponse(SQLAlchemyMixin, APIResponse):
-    class Meta(APIRequest.Meta):
+    class Meta(APIResponse.Meta):
         model = models.Participant
+        envelope_many_key = 'participants'
 
 
 class CreatedParticipant(BaseParticipantResponse):
@@ -30,10 +32,6 @@ class Participant(BaseParticipantResponse):
     id = MM.auto_field()
     name = MM.auto_field()
     individual = MM.auto_field()
-
-# TODO: Replace with envelope
-class Participants(APIResponse):
-    participants = MM.Nested(Participant, many=True)
 
 # endregion
 
@@ -64,18 +62,16 @@ class PollNumbers(APIResponse):
 
 
 class Election(SQLAlchemyMixin, APIResponse):
-    class Meta(APIRequest.Meta):
+    class Meta(APIResponse.Meta):
         model = models.Election
         include_relationships = True
+        envelope_many_key = 'elections'
 
     id = MM.auto_field()
     start = MM.auto_field()
     end = MM.auto_field()
     individual = MM.auto_field()
     participants = MM.Nested(Participant, many=True)
-
-class Elections(APIResponse):
-    elections = MM.Nested(Election, many=True)
 
 # endregion
 
@@ -89,11 +85,6 @@ class ResultsQuery(APIQuery):
 
 
 # region Results responses
-
-# TODO: Replace with envelope
-class ParticipantResult(Base):
-    pass
-
 
 class Results(APIResponse):
     pass

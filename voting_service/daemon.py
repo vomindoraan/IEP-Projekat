@@ -1,10 +1,11 @@
-from datetime import datetime
-
 if __name__ == '__main__':
+    from datetime import datetime
+
     import redis
 
     from . import config, create_app
     from admin_service.models import DB, Election, Vote
+
 
     app = create_app()
     DB.init_app(app)
@@ -21,14 +22,14 @@ if __name__ == '__main__':
             continue
 
         now = datetime.utcnow()
-        e = DB.session.query(Election).filter(
+        e = Election.query.filter(
             Election.start <= now <= Election.end
         ).first()
         if not e:
             continue
 
         invalid = None
-        if DB.session.query(Vote).get(id):
+        if Vote.query.get(id):
             invalid = "Duplicate ballot."
 
         vote = Vote(id, poll_number, invalid, election_id=e.id)

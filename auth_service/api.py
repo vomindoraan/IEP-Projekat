@@ -9,14 +9,14 @@ from . import schemas
 from .models import DB, User
 
 
-service_bp = Blueprint('users', __name__)
+service_bp = Blueprint('auth', __name__)
 
 
 @service_bp.post('/register')
 @consumes(schemas.UserRegistration.ONE)
 @produces(schemas.EmptyResponse.ONE)
 def register_user(data):
-    if DB.session.query(User).filter(User.email == data['email']).first():
+    if User.query.filter(User.email == data['email']).first():
         raise BadRequest("Email already exists.")
 
     user = User(**data)
@@ -28,9 +28,12 @@ def register_user(data):
 @consumes(schemas.UserLogin.ONE)
 @produces(schemas.TokenPair.ONE)
 def login_user(data):
-    user = DB.session.query(User).filter(
-        and_(User.email == data['email'], User.password == data['password'])
-    ).first()
+    user = (
+        User.query
+        .filter(and_(User.email == data['email'],
+                     User.password == data['password']))
+        .first()
+    )
     if not user:
         raise BadRequest("Invalid credentials.")
 
@@ -41,8 +44,10 @@ def login_user(data):
         'roles':    'admin' if user.is_admin else None,
     }
     return {
-        'access_token': create_access_token(identity=user.email, additional_claims=ac),
-        'refresh_token': create_refresh_token(identity=user.email, additional_claims=ac),
+        'access_token': create_access_token(identity=user.email,
+                                            additional_claims=ac),
+        'refresh_token': create_refresh_token(identity=user.email,
+                                              additional_claims=ac),
     }
 
 
@@ -51,16 +56,17 @@ def login_user(data):
 @produces(schemas.AccessToken.ONE)
 def refresh_token():
     identity = get_jwt_identity()
-    claims = get_jwt()
+    jwt = get_jwt()
 
     ac = {
-        'jmbg':     claims['jmbg'],
-        'forename': claims['forename'],
-        'surname':  claims['surname'],
-        'roles':    claims['roles'],
+        'jmbg':     jwt['jmbg'],
+        'forename': jwt['forename'],
+        'surname':  jwt['surname'],
+        'roles':    jwt['roles'],
     }
     return {
-        'access_token': create_access_token(identity=identity, additional_claims=ac),
+        'access_token': create_access_token(identity=identity,
+                                            additional_claims=ac),
     }
 
 
@@ -69,7 +75,7 @@ def refresh_token():
 @consumes(schemas.UserDeletion.ONE)
 @produces(schemas.EmptyResponse.ONE)
 def delete_user(data):
-    user = DB.session.query(User).filter(User.email == data['email']).first()
+    user = User.query.filter(User.email == data['email']).first()
     if not user:
         raise BadRequest("Unknown user.")
 
