@@ -22,8 +22,8 @@ def consumes(schema: schemas.Base):
             params = {**request.values, **(request.json or {})}
             try:
                 data = schema.load(params)
-            except ValidationError as e:
-                raise BadRequest(description=e.messages) from e
+            except ValidationError as e:  # TODO: Replace with app exception.
+                raise BadRequest(description=e.messages[0]) from e
 
             return handler(*args, **kwargs, data=data)
 

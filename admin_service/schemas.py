@@ -1,4 +1,4 @@
-from marshmallow import ValidationError, validates_schema
+from marshmallow import validates_schema
 
 from common.schemas import *
 from . import models
@@ -50,6 +50,7 @@ class ElectionCreation(SQLAlchemyMixin, APIRequest):
     @validates_schema
     def validate_interval(self, data, **kwargs):
         if data['start'] >= data['end']:
+            # TODO: Replace with app exception.
             raise ValidationError("Start date must be before end date.")
 
 # endregion

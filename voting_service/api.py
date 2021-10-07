@@ -19,8 +19,8 @@ def vote():
         f = request.files['file']
         stream = io.StringIO(f.stream.read().decode('utf-8'))
         csv_in = csv.reader(stream)
-    except Exception:
-        return BadRequest("Field file missing.")
+    except Exception as e:
+        raise BadRequest("Field file missing.") from e
 
     content = []
     for i, values in enumerate(csv_in):

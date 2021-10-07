@@ -55,9 +55,7 @@ def create_election(data):
     DB.session.add(election)
     DB.session.commit()
 
-    return {
-        'poll_numbers': poll_numbers
-    }
+    return {'poll_numbers': poll_numbers}
 
 
 @service_bp.get('/getElections')
@@ -82,9 +80,7 @@ def get_results(data):
 
     invalid_votes = Vote.query.filter(Vote.invalid is not None)
 
-    return {
-        'invalid_votes': invalid_votes,
-    }
+    return {'invalid_votes': invalid_votes}
 
 
 lookup_bp = Blueprint('lookup', __name__)

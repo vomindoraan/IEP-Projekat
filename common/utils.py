@@ -1,31 +1,45 @@
 import re
 
 
-def filter_dict(function, mapping, by_values=False):
-    """Filter mapping by keys or values.
+# TODO: Add type hints
 
-    Return a dict of items from mapping for which either function(key)
-    or function(value) is true (depending on by_values). If function is
-    None, return the items whose either key or value is true.
+def filter_dict(predicate, mapping, *,
+                by_keys_only=False, by_values_only=False):
+    """Filter `mapping` by keys and/or values.
+
+    Return a dict of items from `mapping` for which `predicate(key, value)` is
+    true.
+    If `by_keys_only` is true, only check `predicate(key)` for each item.
+    If `by_values_only` is true, only check `predicate(value)` for each item.
+    If both are true, both keys and values are checked, i.e. the function
+    behaves as if they were both false.
+    If checking by keys/values only, `predicate` must be unary. Otherwise, it
+    must be binary.
+    If `predicate` is `None`, every key/value is checked for truthiness.
     """
-    if function is None:
-        function = bool
-    return {k: v for k, v in mapping.items()
-            if function(v if by_values else k)}
+    if predicate is None:
+        predicate = lambda *args: all(args)
+    by_keys_only, by_values_only = bool(by_keys_only), bool(by_values_only)
+    if by_keys_only == by_values_only:
+        return {k: v for k, v in mapping.items()
+                if predicate(k, v)}
+    else:
+        return {k: v for k, v in mapping.items()
+                if predicate(k if by_keys_only else v)}
 
 
-def filter_keys(function, mapping):
-    """Filter mapping by keys. Calls filter_dict with by_values=False."""
-    return filter_dict(function, mapping, by_values=False)
+def filter_keys(predicate, mapping):
+    """Filter `mapping` by keys. Calls `filter_dict(by_keys_only=True)`."""
+    return filter_dict(predicate, mapping, by_keys_only=True)
 
 
-def filter_values(function, mapping):
-    """Filter mapping by values. Calls filter_dict with by_values=True."""
-    return filter_dict(function, mapping, by_values=True)
+def filter_values(predicate, mapping):
+    """Filter `mapping` by values. Calls `filter_dict(by_values_only=True)`."""
+    return filter_dict(predicate, mapping, by_values_only=True)
 
 
 def not_none(value):
-    """Check that value is not None. More legible than filter*(None, ...)."""
+    """Check `value is not None`. More legible than `filter*(None, ...)`."""
     return value is not None
 
 
@@ -36,4 +50,4 @@ def parse_bool(value):
         return True
     if re.fullmatch(r"f(alse)?|n(o(ne)?)?|off|disabled?|0|", value, re.I):
         return False
-    raise ValueError(f"Unconventional truth value {value}")
+    raise ValueError(f"Unrecognized truth value {value}")
