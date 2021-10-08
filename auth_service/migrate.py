@@ -1,7 +1,9 @@
+import os
+
 from flask_migrate import Migrate
 
 
-MG = Migrate()
+MG = Migrate(directory=f'{os.path.dirname(__file__)}/migrations')
 
 
 if __name__ == '__main__':
@@ -23,16 +25,20 @@ if __name__ == '__main__':
         except SystemExit:
             pass
 
-        migrate(message="Production migration")
+        try:
+            migrate()
+        except SystemExit:
+            pass
+
         upgrade()
 
-        if not User.query.filter(User.email == "admin@admin.com").first():
+        if not User.query.filter(User.email == 'admin@admin.com').first():
             admin = User(
-                jmbg="0000000000000",
-                email="admin@admin.com",
-                password="1",
-                forename="admin",
-                surname="admin",
+                jmbg='0000000000000',
+                email='admin@admin.com',
+                password='1',
+                forename='admin',
+                surname='admin',
             )
             DB.session.add(admin)
             DB.session.commit()
