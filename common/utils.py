@@ -12,9 +12,9 @@ def filter_dict(predicate, mapping, *,
     If `by_keys_only` is true, only check `predicate(key)` for each item.
     If `by_values_only` is true, only check `predicate(value)` for each item.
     If both are true, both keys and values are checked, i.e. the function
-    behaves as if they were both false.
-    If checking by keys/values only, `predicate` must be unary. Otherwise, it
-    must be binary.
+    behaves the same as if they were both false.
+    If checking by keys or values only, `predicate` must be a unary function.
+    Otherwise, it must be binary.
     If `predicate` is `None`, every key/value is checked for truthiness.
     """
     if predicate is None:
