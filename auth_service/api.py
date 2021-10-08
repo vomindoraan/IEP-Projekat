@@ -1,8 +1,6 @@
 from flask_jwt_extended import (
-    create_access_token, create_refresh_token, get_jwt, get_jwt_identity,
-    jwt_required,
+    create_access_token, create_refresh_token, get_jwt_identity,
 )
-from flask_jwt_extended.exceptions import NoAuthorizationError
 from sqlalchemy import and_
 
 from common.api import *
@@ -42,7 +40,7 @@ def login_user(data):
         'jmbg':     user.jmbg,
         'forename': user.forename,
         'surname':  user.surname,
-        'roles':    'admin' if user.is_admin else None,  # TODO: Add proper roles
+        'roles':    ['admin'] if user.is_admin else None,  # TODO: Add proper roles
     }
     return {
         'access_token': create_access_token(identity=user.email,
@@ -53,29 +51,25 @@ def login_user(data):
 
 
 @service_bp.post('/refresh')
-@jwt_required(refresh=True)
+@auth_jwt(require_claims=True, refresh=True)
 @produces(schemas.AccessToken.ONE)
 def refresh_token():
     identity = get_jwt_identity()
     jwt = get_jwt()
-    try:
-        ac = {
-            'jmbg':     jwt['jmbg'],
-            'forename': jwt['forename'],
-            'surname':  jwt['surname'],
-            'roles':    jwt['roles'],
-        }
-    except KeyError as e:
-        raise NoAuthorizationError("Bad Authorization Header") from e
-    else:
-        return {
-            'access_token': create_access_token(identity=identity,
-                                                additional_claims=ac),
-        }
+    ac = {
+        'jmbg':     jwt['jmbg'],
+        'forename': jwt['forename'],
+        'surname':  jwt['surname'],
+        'roles':    jwt['roles'],
+    }
+    return {
+        'access_token': create_access_token(identity=identity,
+                                            additional_claims=ac),
+    }
 
 
 @service_bp.post('/delete')
-@jwt_required()
+@auth_jwt()
 @consumes(schemas.UserDeletion.ONE)
 @produces(schemas.EmptyResponse.ONE)
 def delete_user(data):

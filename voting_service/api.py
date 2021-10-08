@@ -2,7 +2,6 @@ import csv
 import io
 
 import redis
-from flask_jwt_extended import jwt_required
 
 from common.api import *
 from . import config, schemas
@@ -12,7 +11,7 @@ service_bp = Blueprint('voting', __name__)
 
 
 @service_bp.post('/vote')
-@jwt_required()
+@auth_jwt()
 @produces(schemas.EmptyResponse.ONE)
 def vote():
     try:

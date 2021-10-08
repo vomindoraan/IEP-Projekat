@@ -43,10 +43,10 @@ class BaseUserRequest(SQLAlchemyMixin, APIRequest):
 
 class UserRegistration(BaseUserRequest):
     jmbg = MM.auto_field(validate=validate_jmbg)
-    email = MM.auto_field(validate=validate_email)
-    password = MM.auto_field(validate=validate_password)
     forename = MM.auto_field()
     surname = MM.auto_field()
+    email = MM.auto_field(validate=validate_email)
+    password = MM.auto_field(validate=validate_password)
 
 
 class UserLogin(BaseUserRequest):

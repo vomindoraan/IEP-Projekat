@@ -1,6 +1,8 @@
 from functools import wraps
 
 from flask import Blueprint, request
+from flask_jwt_extended import get_jwt, jwt_required
+from flask_jwt_extended.exceptions import NoAuthorizationError
 from marshmallow import ValidationError
 from werkzeug.exceptions import BadRequest, HTTPException
 
@@ -8,6 +10,33 @@ from common.schemas import BaseSchema
 
 
 # region Route middleware
+
+def auth_jwt(*jwt_args, require_claims=False, admin=False, **jwt_kwargs):
+    # TODO: Write docstring
+    def decorator(handler):
+        @wraps(handler)
+        @jwt_required(*jwt_args, **jwt_kwargs)
+        def wrapper(*args, **kwargs):
+            jwt = get_jwt()
+
+            missing_claims = not all(
+                k in jwt for k in ('jmbg', 'forename', 'surname', 'roles')
+            )
+            if require_claims and missing_claims:
+                raise NoAuthorizationError("Bad Authorization Header")
+
+            missing_admin_role = not (
+                jwt.get('roles') and 'admin' in jwt.get('roles')
+            )
+            if admin and missing_admin_role:
+                raise NoAuthorizationError("Missing Authorization Header")
+
+            return handler(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
 
 def consumes(schema: BaseSchema):
     """Deserialize request data and inject it into the route handler.

@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from flask_jwt_extended import jwt_required
-
 from common.api import *
 from . import schemas
 from .models import DB, Election, Participant, Vote
@@ -11,7 +9,7 @@ service_bp = Blueprint('admin', __name__)
 
 
 @service_bp.post('/createParticipant')
-@jwt_required()
+@auth_jwt()
 @consumes(schemas.ParticipantCreation.ONE)
 @produces(schemas.CreatedParticipant.ONE)
 def create_participant(data):
@@ -22,14 +20,14 @@ def create_participant(data):
 
 
 @service_bp.get('/getParticipants')
-@jwt_required()
+@auth_jwt()
 @produces(schemas.Participant.MANY)
 def get_participants():
     return Participant.query.all()
 
 
 @service_bp.post('/createElection')
-@jwt_required()
+@auth_jwt()
 @consumes(schemas.ElectionCreation.ONE)
 @produces(schemas.PollNumbers.ONE)
 def create_election(data):
@@ -59,14 +57,14 @@ def create_election(data):
 
 
 @service_bp.get('/getElections')
-@jwt_required()
+@auth_jwt()
 @produces(schemas.Election.MANY)
 def get_elections():
     return Election.query.all()
 
 
 @service_bp.get('/getResults')
-@jwt_required()
+@auth_jwt()
 @consumes(schemas.ResultsQuery.ONE)
 @produces(schemas.Results.ONE)
 def get_results(data):
@@ -86,7 +84,7 @@ def get_results(data):
 lookup_bp = Blueprint('lookup', __name__)
 
 @lookup_bp.get('/lookup')
-@jwt_required()
+@auth_jwt()
 @consumes(schemas.LookupQuery.ONE)
 @produces(schemas.Election.MANY)
 def lookup(data):
