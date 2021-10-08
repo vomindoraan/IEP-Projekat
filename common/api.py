@@ -4,12 +4,12 @@ from flask import Blueprint, request
 from marshmallow import ValidationError
 from werkzeug.exceptions import BadRequest, HTTPException
 
-from common import schemas
+from common.schemas import BaseSchema
 
 
 # region Route middleware
 
-def consumes(schema: schemas.Base):
+def consumes(schema: BaseSchema):
     """Deserialize request data and inject it into the route handler.
 
     schema is a Schema object, e.g. an APIRequest.
@@ -41,7 +41,7 @@ def consumes(schema: schemas.Base):
     return decorator
 
 
-def produces(schema: schemas.Base, status=200):
+def produces(schema: BaseSchema, status=200):
     """Serialize data returned by the handler and form a response body.
 
     schema is a Schema-like object that supports dumps operations, e.g.

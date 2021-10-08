@@ -5,7 +5,7 @@ import redis
 from flask_jwt_extended import jwt_required
 
 from common.api import *
-from . import config
+from . import config, schemas
 
 
 service_bp = Blueprint('voting', __name__)

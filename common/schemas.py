@@ -16,22 +16,22 @@ MM = Marshmallow()
 
 # region Base schemas
 
-class BaseMeta(type(MM.Schema)):
+class BaseSchemaMeta(type(MM.Schema)):
     def __init__(cls, name, bases, attrs):
         super().__init__(name, bases, attrs)
         cls.ONE = cls()
         cls.MANY = cls(many=True)
 
 
-class BaseOpts(MM.Schema.OPTIONS_CLASS):
+class BaseSchemaOpts(MM.Schema.OPTIONS_CLASS):
     def __init__(self, meta, **kwargs):
         super().__init__(meta, **kwargs)
         self.envelope_key = getattr(meta, 'envelope_key', None)
         self.envelope_many_key = getattr(meta, 'envelope_many_key', None)
 
 
-class Base(MM.Schema, metaclass=BaseMeta):
-    OPTIONS_CLASS = BaseOpts
+class BaseSchema(MM.Schema, metaclass=BaseSchemaMeta):
+    OPTIONS_CLASS = BaseSchemaOpts
 
     class Meta:  # Schema options, not related to metaclass.
         datetimeformat = 'iso'
@@ -59,11 +59,11 @@ class Base(MM.Schema, metaclass=BaseMeta):
 
 # region Mixins
 
-class SQLAlchemyMixinMeta(BaseMeta, type(MM.SQLAlchemySchema)):
+class SQLAlchemyMixinMeta(BaseSchemaMeta, type(MM.SQLAlchemySchema)):
     pass
 
 
-class SQLAlchemyMixinOpts(BaseOpts, MM.SQLAlchemySchema.OPTIONS_CLASS):
+class SQLAlchemyMixinOpts(BaseSchemaOpts, MM.SQLAlchemySchema.OPTIONS_CLASS):
     pass
 
 
@@ -72,7 +72,7 @@ class SQLAlchemyMixin(MM.SQLAlchemySchema, metaclass=SQLAlchemyMixinMeta):
 
 
 # TODO: What happens on dump?
-class CollapseErrorsMixin(Base):
+class CollapseErrorsMessagesMixin(BaseSchema):
     messages = {
         'missing': "Field {data_key} is missing.",
         'null':    "Field {data_key} may not be null.",
@@ -181,8 +181,8 @@ class CollapseErrorsMixin(Base):
 
 # region API schemas
 
-class APIRequest(CollapseErrorsMixin, Base):
-    class Meta(Base.Meta):
+class APIRequest(CollapseErrorsMessagesMixin, BaseSchema):
+    class Meta(BaseSchema.Meta):
         ordered = True
         unknown = RAISE
 
@@ -191,7 +191,7 @@ class APIRequest(CollapseErrorsMixin, Base):
         return filter_values(lambda v: v != '', data)
 
 
-class APIResponse(Base):
+class APIResponse(BaseSchema):
     pass
 
 
