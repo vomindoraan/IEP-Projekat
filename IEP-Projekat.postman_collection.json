@@ -1,12 +1,12 @@
 {
 	"info": {
 		"_postman_id": "0833c892-3136-4dbf-ae80-e266f28df87a",
-		"name": "New Collection",
+		"name": "IEP-Projekat",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "register",
+			"name": "auth/register",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -18,12 +18,12 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"pera.peric@gmail.com\",\r\n    \"forename\": \"Pera\",\r\n    \"surname\": \"Peric\",\r\n    \"jmbg\": \"2805995770011\",\r\n    \"password\": \"asd12345\"\r\n}"
+					"raw": "{\r\n    \"email\": \"pera.peric@gmail.com\",\r\n    \"forename\": \"Pera\",\r\n    \"surname\": \"Peric\",\r\n    \"jmbg\": \"2805995770011\",\r\n    \"password\": \"asd12345D\"\r\n}"
 				},
 				"url": {
-					"raw": "{{url}}/register",
+					"raw": "{{auth_url}}/register",
 					"host": [
-						"{{url}}"
+						"{{auth_url}}"
 					],
 					"path": [
 						"register"
@@ -33,7 +33,7 @@
 			"response": []
 		},
 		{
-			"name": "login",
+			"name": "auth/login",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -51,6 +51,7 @@
 							"var jsonData = pm.response.json();\r",
 							"\r",
 							"pm.collectionVariables.set(\"accessToken\", jsonData[\"accessToken\"]);\r",
+							"pm.collectionVariables.set(\"refreshToken\", jsonData[\"refreshToken\"]);\r",
 							""
 						],
 						"type": "text/javascript"
@@ -71,9 +72,9 @@
 					"raw": "{\r\n    \"email\": \"admin@admin.com\",\r\n    \"password\": \"1\"\r\n}"
 				},
 				"url": {
-					"raw": "{{url}}/login",
+					"raw": "{{auth_url}}/login",
 					"host": [
-						"{{url}}"
+						"{{auth_url}}"
 					],
 					"path": [
 						"login"
@@ -83,7 +84,7 @@
 			"response": []
 		},
 		{
-			"name": "refresh",
+			"name": "auth/refresh",
 			"event": [
 				{
 					"listen": "test",
@@ -103,14 +104,14 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYzMjk5NjY1MSwianRpIjoiYmM1NWEyYzAtNGFlZS00ZGI4LWFiNDctY2UwNjU0NDhhN2Y2IiwidHlwZSI6InJlZnJlc2giLCJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJuYmYiOjE2MzI5OTY2NTEsImV4cCI6MTYzNTU4ODY1MSwiZm9yZW5hbWUiOiJhZG1pbiIsInN1cm5hbWUiOiJhZG1pbiJ9.ohjll9jOzQrGBuyDon9k9ggpgXV1RWv0NQfc9SG8DTE",
+						"value": "Bearer {{refreshToken}}",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{url}}/refresh",
+					"raw": "{{auth_url}}/refresh",
 					"host": [
-						"{{url}}"
+						"{{auth_url}}"
 					],
 					"path": [
 						"refresh"
@@ -120,39 +121,10 @@
 			"response": []
 		},
 		{
-			"name": "delete",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYzMjk5ODI2MCwianRpIjoiMDMzM2NkYjAtNjJhMy00NWI1LWIyMWUtZGRiYWVlMjViZTkzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluQGFkbWluLmNvbSIsIm5iZiI6MTYzMjk5ODI2MCwiZXhwIjoxNjMzMDAxODYwLCJmb3JlbmFtZSI6ImFkbWluIiwic3VybmFtZSI6ImFkbWluIiwiaXNfYWRtaW4iOmZhbHNlfQ.PwKW3nYs-AWLpkgDnCt9rmPJBxCLVwn6Xj4QwI785ik",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"email\": \"pera.peric@gmail.com\"\r\n}"
-				},
-				"url": {
-					"raw": "{{url}}/delete",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"delete"
-					]
-				}
+			"name": "auth/delete",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
 			},
-			"response": []
-		},
-		{
-			"name": "createParticipant",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -169,7 +141,39 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Dera Doric\",\r\n    \"individual\": true\r\n}"
+					"raw": "{\r\n    \"email\": \"pera.peric@gmail.com\"\r\n}"
+				},
+				"url": {
+					"raw": "{{auth_url}}/delete",
+					"host": [
+						"{{auth_url}}"
+					],
+					"path": [
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "admin/createParticipant",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Stranka Zdravog Razuma\",\r\n    \"individual\": false\r\n}"
 				},
 				"url": {
 					"raw": "{{admin_url}}/createParticipant",
@@ -184,7 +188,7 @@
 			"response": []
 		},
 		{
-			"name": "getParticipants",
+			"name": "admin/getParticipants",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -214,7 +218,7 @@
 			"response": []
 		},
 		{
-			"name": "createElection",
+			"name": "admin/createElection",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -246,7 +250,7 @@
 			"response": []
 		},
 		{
-			"name": "getElections",
+			"name": "admin/getElections",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -276,7 +280,7 @@
 			"response": []
 		},
 		{
-			"name": "getResults",
+			"name": "admin/getResults",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -306,7 +310,37 @@
 			"response": []
 		},
 		{
-			"name": "vote",
+			"name": "lookup/lookup",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{lookup_url}}/lookup",
+					"host": [
+						"{{lookup_url}}"
+					],
+					"path": [
+						"lookup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "voting/vote",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -323,45 +357,15 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"start\": \"2019-09-30T00:00:00Z\",\r\n    \"end\": \"2020-09-30T00:00:00Z\",\r\n    \"individual\": 0,\r\n    \"participants\": [2,3]\r\n}"
+					"raw": "{\r\n\r\n}"
 				},
 				"url": {
-					"raw": "{{admin_url}}/createElection",
+					"raw": "{{voting_url}}/vote",
 					"host": [
-						"{{admin_url}}"
+						"{{voting_url}}"
 					],
 					"path": [
-						"createElection"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "lookup",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{accessToken}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{admin_url}}/getResults",
-					"host": [
-						"{{admin_url}}"
-					],
-					"path": [
-						"getResults"
+						"vote"
 					]
 				}
 			},
@@ -390,24 +394,28 @@
 	],
 	"variable": [
 		{
-			"key": "url",
-			"value": "http://0.0.0.0:9010"
+			"key": "auth_url",
+			"value": "http://0.0.0.0:9000"
 		},
 		{
 			"key": "admin_url",
+			"value": "http://0.0.0.0:9010"
+		},
+		{
+			"key": "lookup_url",
 			"value": "http://0.0.0.0:9011"
+		},
+		{
+			"key": "voting_url",
+			"value": "http://0.0.0.0:9020"
 		},
 		{
 			"key": "accessToken",
 			"value": ""
 		},
 		{
-			"key": "vote_url",
-			"value": "http://0.0.0.0:9012"
-		},
-		{
-			"key": "lookup_url",
-			"value": "http://0.0.0.0:9021"
+			"key": "refreshToken",
+			"value": ""
 		}
 	]
 }
