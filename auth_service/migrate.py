@@ -39,6 +39,7 @@ if __name__ == '__main__':
                 password='1',
                 forename='admin',
                 surname='admin',
+                role='admin',
             )
             DB.session.add(admin)
             DB.session.commit()

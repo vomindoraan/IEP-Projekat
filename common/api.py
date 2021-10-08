@@ -19,15 +19,13 @@ def auth_jwt(*jwt_args, require_claims=False, admin=False, **jwt_kwargs):
         def wrapper(*args, **kwargs):
             jwt = get_jwt()
 
-            missing_claims = not all(
-                k in jwt for k in ('jmbg', 'forename', 'surname', 'roles')
+            missing_claims = any(
+                k not in jwt for k in ('jmbg', 'forename', 'surname', 'role')
             )
             if require_claims and missing_claims:
                 raise NoAuthorizationError("Bad Authorization Header")
 
-            missing_admin_role = not (
-                jwt.get('roles') and 'admin' in jwt.get('roles')
-            )
+            missing_admin_role = jwt.get('role') != 'admin'
             if admin and missing_admin_role:
                 raise NoAuthorizationError("Missing Authorization Header")
 

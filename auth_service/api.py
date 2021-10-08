@@ -40,7 +40,7 @@ def login_user(data):
         'jmbg':     user.jmbg,
         'forename': user.forename,
         'surname':  user.surname,
-        'roles':    ['admin'] if user.is_admin else None,  # TODO: Add proper roles
+        'role':     user.role,
     }
     return {
         'access_token': create_access_token(identity=user.email,
@@ -60,7 +60,7 @@ def refresh_token():
         'jmbg':     jwt['jmbg'],
         'forename': jwt['forename'],
         'surname':  jwt['surname'],
-        'roles':    jwt['roles'],
+        'role':     jwt['role'],
     }
     return {
         'access_token': create_access_token(identity=identity,

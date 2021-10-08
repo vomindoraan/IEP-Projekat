@@ -15,4 +15,4 @@ class User(DB.Model):
     password = DB.Column(DB.String(256), nullable=False)
     forename = DB.Column(DB.String(256), nullable=False)
     surname = DB.Column(DB.String(256), nullable=False)
-    is_admin = DB.Column(DB.Boolean, nullable=False, default=False)
+    role = DB.Column(DB.String(16), nullable=False, default='user')
