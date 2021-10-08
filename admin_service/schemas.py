@@ -47,11 +47,18 @@ class ElectionCreation(SQLAlchemyMixin, APIRequest):
     individual = MM.auto_field()
     participants = MM.List(MM.Integer(), required=True)
 
+    @classmethod
+    def make_message(cls, msg_key, data_key):
+        match msg_key, data_key:
+            case 'invalid', ('start' | 'end'):
+                return "Invalid date and time."
+            case _:
+                return super().make_message(msg_key, data_key)
+
     @validates_schema
     def validate_interval(self, data, **kwargs):
         if data['start'] >= data['end']:
-            # TODO: Replace with app exception.
-            raise ValidationError("Start date must be before end date.")
+            raise ValidationError("Invalid date and time.")
 
 # endregion
 
