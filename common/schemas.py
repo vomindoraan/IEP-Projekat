@@ -140,6 +140,8 @@ class CollapseErrorsMessagesMixin(BaseSchema):
     def _check_messages(self, data_key, messages, *,
                         value_pattern=None, key_pattern=None,
                         data=None, many=None):
+        if isinstance(messages, dict):
+            messages = list(chain.from_iterable(messages.values()))  # Flatten
         if value_pattern:
             if any(re.fullmatch(value_pattern, m) for m in messages):
                 return True
