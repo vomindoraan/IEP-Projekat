@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   # region Authentication
 
@@ -109,6 +107,7 @@ services:
       args:
         - SERVICE=voting_service
     image: voting-daemon
+    restart: always
     depends_on:
       - votedb
       - redis

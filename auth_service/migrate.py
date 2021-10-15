@@ -10,14 +10,14 @@ if __name__ == '__main__':
     from flask_migrate import init, migrate, upgrade
     from sqlalchemy_utils import create_database, database_exists
 
-    from . import create_app
+    from . import config, create_app
     from .models import DB, User
 
 
     app = create_app()
 
-    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
-        create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    if not database_exists(config.SQLALCHEMY_DATABASE_URI):
+        create_database(config.SQLALCHEMY_DATABASE_URI)
 
     with app.app_context() as context:
         try:

@@ -33,6 +33,7 @@ def get_participants():
 def create_election(data):
     election = Election(start=data['start'], end=data['end'],
                         individual=data['individual'])
+    # TODO: Replace loop with filter
     for e in Election.query.all():
         e.start = e.start.astimezone(election.start.tzinfo)
         e.end = e.end.astimezone(election.start.tzinfo)
@@ -79,7 +80,7 @@ def get_results(data):
     eid = data['election_id']
     if not (e := Election.query.get(eid)):
         raise BadRequest("Election does not exist.")
-    elif e.end > datetime.now(tz=e.end.tzinfo):
+    elif e.end > datetime.now(e.end.tzinfo):
         raise BadRequest("Election is ongoing.")
 
     # for p in Participant.query.filter(Participant.election_id == eid):

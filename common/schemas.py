@@ -2,7 +2,6 @@ import re
 from itertools import chain, zip_longest
 
 import ujson
-from flask import current_app
 from flask_marshmallow import Marshmallow
 from marshmallow import EXCLUDE, RAISE, ValidationError, post_dump, pre_load
 from marshmallow.decorators import VALIDATES_SCHEMA
@@ -106,7 +105,7 @@ class CollapseErrorsMessagesMixin(BaseSchema):
         return cls.messages[msg_key].format(data_key=data_key)
 
     def handle_error(self, error, data, *, many, **kwargs):
-        if not current_app.config['COLLAPSE_ERROR_MESSAGES']:
+        if not config.COLLAPSE_ERROR_MESSAGES:
             return
 
         if (missing := filter_dict(

@@ -21,10 +21,8 @@ if __name__ == '__main__':
         except (AttributeError, ValueError):
             continue
 
-        now = datetime.utcnow()
-        e = Election.query.filter(
-            Election.start <= now <= Election.end
-        ).first()
+        now = datetime.now(config.TIMEZONE)
+        e = Election.query.filter(Election.start <= now <= Election.end).first()
         if not e:
             continue
 

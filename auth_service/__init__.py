@@ -4,9 +4,9 @@ from flask_jwt_extended import JWTManager
 from . import config
 
 
-def create_app(config_file=config.__file__):
+def create_app():
     app = Flask(__name__)
-    app.config.from_pyfile(config_file)
+    app.config.from_pyfile(config.__file__)
 
     JWTManager(app)
 

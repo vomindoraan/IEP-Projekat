@@ -2,6 +2,7 @@ import csv
 import io
 
 import redis
+from werkzeug.exceptions import ServiceUnavailable
 
 from common.api import *
 from . import config, schemas
@@ -18,7 +19,7 @@ def vote():
         f = request.files['file']
         stream = io.StringIO(f.stream.read().decode('utf-8'))
         csv_in = csv.reader(stream)
-    except Exception as e:
+    except (KeyError, UnicodeDecodeError) as e:
         raise BadRequest("Field file missing.") from e
 
     content = []
@@ -29,4 +30,6 @@ def vote():
 
     r = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
     for values in content:
-        r.publish(config.REDIS_VOTES_LIST, ' '.join(values))
+        if r.publish(config.REDIS_VOTES_LIST, ' '.join(values)) == 0:
+            raise ServiceUnavailable("Voting service temporarily unavailable.",
+                                     retry_after=config.RETRY_DELAY)
