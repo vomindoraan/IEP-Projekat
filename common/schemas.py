@@ -8,10 +8,22 @@ from marshmallow import EXCLUDE, RAISE, ValidationError, post_dump, pre_load
 from marshmallow.decorators import VALIDATES_SCHEMA
 from marshmallow.exceptions import SCHEMA as SCHEMA_KEY
 
+from common import config
 from common.utils import filter_dict, filter_values
 
 
 MM = Marshmallow()
+
+
+# region Custom fields
+
+class DateTimeField(MM.AwareDateTime):
+    def __init__(self, *args, default_timezone=None, **kwargs):
+        if default_timezone is None:
+            default_timezone = config.TIMEZONE
+        super().__init__(*args, default_timezone=default_timezone, **kwargs)
+
+# endregion
 
 
 # region Base schemas

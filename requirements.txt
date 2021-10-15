@@ -10,5 +10,6 @@ PyMySQL[rsa]==1.0.2
 redis==3.5.3
 SQLAlchemy==1.4.25
 SQLAlchemy-Utils==0.37.8
+tzlocal==3.0
 ujson==4.2.0
 Werkzeug==2.0.2

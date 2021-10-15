@@ -31,7 +31,16 @@ def get_participants():
 @consumes(schemas.ElectionCreation.ONE)
 @produces(schemas.PollNumbers.ONE)
 def create_election(data):
-    # TODO: Check dates
+    election = Election(start=data['start'], end=data['end'],
+                        individual=data['individual'])
+    for e in Election.query.all():
+        e.start = e.start.astimezone(election.start.tzinfo)
+        e.end = e.end.astimezone(election.start.tzinfo)
+        if (
+            e.start < election.start and e.end >= election.start or
+            election.start < e.start and election.end >= e.start
+        ):
+            raise BadRequest("Invalid date and time.")
 
     participant_ids = data['participants']
     if len(participant_ids) < 2:
@@ -48,8 +57,7 @@ def create_election(data):
         participants.append(p)
         poll_numbers.append(i)
 
-    data['participants'] = participants
-    election = Election(**data)
+    election.participants = participants
     DB.session.add(election)
     DB.session.commit()
 

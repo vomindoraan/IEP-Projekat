@@ -1,5 +1,8 @@
 import os
 from datetime import timedelta
+from zoneinfo import ZoneInfo
+
+import tzlocal
 
 from common.utils import parse_bool
 
@@ -13,6 +16,7 @@ COLLAPSE_ERROR_MESSAGES = parse_bool(os.getenv('COLLAPSE_ERROR_MESSAGES', True))
 SERVER_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
 SERVER_PORT = int(os.getenv('SERVER_PORT', 9000))
 SERVER_NAME = f'{SERVER_HOST}:{SERVER_PORT}'
+TIMEZONE = ZoneInfo(os.getenv('TIMEZONE', tzlocal.get_localzone().key))
 
 # JWT config
 JWT_SECRET_KEY = '13С113ИЕП'

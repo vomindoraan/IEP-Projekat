@@ -21,7 +21,6 @@ class ParticipantCreation(SQLAlchemyMixin, APIRequest):
 class BaseParticipantResponse(SQLAlchemyMixin, APIResponse):
     class Meta(APIResponse.Meta):
         model = models.Participant
-        envelope_many_key = 'participants'
 
 
 class CreatedParticipant(BaseParticipantResponse):
@@ -29,6 +28,9 @@ class CreatedParticipant(BaseParticipantResponse):
 
 
 class Participant(BaseParticipantResponse):
+    class Meta(BaseParticipantResponse.Meta):
+        envelope_many_key = 'participants'
+
     id = MM.auto_field()
     name = MM.auto_field()
     individual = MM.auto_field()
@@ -42,8 +44,8 @@ class ElectionCreation(SQLAlchemyMixin, APIRequest):
     class Meta(APIRequest.Meta):
         model = models.Election
 
-    start = MM.auto_field()
-    end = MM.auto_field()
+    start = DateTimeField(required=True)
+    end = DateTimeField(required=True)
     individual = MM.auto_field()
     participants = MM.List(MM.Integer(), required=True)
 
@@ -57,7 +59,7 @@ class ElectionCreation(SQLAlchemyMixin, APIRequest):
 
     @validates_schema
     def validate_interval(self, data, **kwargs):
-        if data['start'] >= data['end']:
+        if data['start'] > data['end']:
             raise ValidationError("Invalid date and time.")
 
 # endregion
@@ -67,6 +69,11 @@ class ElectionCreation(SQLAlchemyMixin, APIRequest):
 
 class PollNumbers(APIResponse):
     poll_numbers = MM.List(MM.Integer(), data_key='pollNumbers')
+
+
+class ElectionParticipant(BaseParticipantResponse):
+    id = MM.auto_field()
+    name = MM.auto_field()
 
 
 class Election(SQLAlchemyMixin, APIResponse):
@@ -79,7 +86,7 @@ class Election(SQLAlchemyMixin, APIResponse):
     start = MM.auto_field()
     end = MM.auto_field()
     individual = MM.auto_field()
-    participants = MM.Nested(Participant, many=True)
+    participants = MM.Nested(ElectionParticipant, many=True)
 
 # endregion
 
