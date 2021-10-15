@@ -18,7 +18,7 @@ if __name__ == '__main__':
         msg = pubsub.get_message()
         try:
             id, poll_number = msg.split()
-        except ValueError:
+        except (AttributeError, ValueError):
             continue
 
         now = datetime.utcnow()
