@@ -6,7 +6,7 @@ flask-marshmallow==0.14.0
 marshmallow-sqlalchemy==0.26.1
 marshmallow==3.13.0
 PyMySQL[rsa]==1.0.2
-# passlib==1.7.4
+passlib==1.7.4
 redis==3.5.3
 SQLAlchemy==1.4.25
 SQLAlchemy-Utils==0.37.8

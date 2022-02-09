@@ -1,7 +1,6 @@
 from flask_jwt_extended import (
     create_access_token, create_refresh_token, get_jwt_identity,
 )
-from sqlalchemy import and_
 
 from common.api import *
 from . import schemas
@@ -27,13 +26,8 @@ def register_user(data):
 @consumes(schemas.UserLogin.ONE)
 @produces(schemas.TokenPair.ONE)
 def login_user(data):
-    user = (
-        User.query
-        .filter(and_(User.email == data['email'],
-                     User.password == data['password']))
-        .first()
-    )
-    if not user:
+    user = User.query.filter(User.email == data['email']).first()
+    if not user or user.password != data['password']:
         raise BadRequest("Invalid credentials.")
 
     claims = {
