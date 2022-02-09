@@ -36,7 +36,7 @@ def login_user(data):
     if not user:
         raise BadRequest("Invalid credentials.")
 
-    ac = {
+    claims = {
         'jmbg':     user.jmbg,
         'forename': user.forename,
         'surname':  user.surname,
@@ -44,9 +44,9 @@ def login_user(data):
     }
     return {
         'access_token': create_access_token(identity=user.email,
-                                            additional_claims=ac),
+                                            additional_claims=claims),
         'refresh_token': create_refresh_token(identity=user.email,
-                                              additional_claims=ac),
+                                              additional_claims=claims),
     }
 
 
@@ -56,7 +56,7 @@ def login_user(data):
 def refresh_token():
     identity = get_jwt_identity()
     jwt = get_jwt()
-    ac = {
+    claims = {
         'jmbg':     jwt['jmbg'],
         'forename': jwt['forename'],
         'surname':  jwt['surname'],
@@ -64,7 +64,7 @@ def refresh_token():
     }
     return {
         'access_token': create_access_token(identity=identity,
-                                            additional_claims=ac),
+                                            additional_claims=claims),
     }
 
 
