@@ -1,5 +1,5 @@
 if __name__ == '__main__':
-    from admin_service.api import extra_bp
+    from .api import extra_bp
     from . import config, create_app
 
 

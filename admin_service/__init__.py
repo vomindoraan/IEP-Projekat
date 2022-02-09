@@ -10,12 +10,6 @@ def create_app():
 
     JWTManager(app)
 
-    from . import models
-    models.DB.init_app(app)
-
-    from . import migrate
-    migrate.MG.init_app(app, models.DB)
-
     from . import schemas
     schemas.MM.init_app(app)
 

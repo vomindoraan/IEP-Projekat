@@ -4,7 +4,7 @@ if __name__ == '__main__':
     import redis
 
     from . import config, create_app
-    from admin_service.models import DB, Election, Vote
+    from .models import DB, Election, Vote
 
 
     app = create_app()

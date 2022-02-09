@@ -1,7 +1,7 @@
 from marshmallow import validates_schema
 
 from common.schemas import *
-from . import models
+from voting_service import models
 
 
 # region Participant requests

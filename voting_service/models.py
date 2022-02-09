@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_utils import UUIDType
 
 
 DB = SQLAlchemy()
@@ -32,6 +33,7 @@ class Vote(DB.Model):
     __tablename__ = 'votes'
 
     id = DB.Column(DB.Integer, primary_key=True)
+    ballot_uuid = DB.Column(UUIDType, nullable=False)
     poll_number = DB.Column(DB.Integer, nullable=False)
     invalid = DB.Column(DB.String(256))
 

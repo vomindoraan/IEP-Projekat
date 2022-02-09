@@ -2,7 +2,7 @@ from datetime import datetime
 
 from common.api import *
 from . import schemas
-from .models import DB, Election, Participant, Vote
+from voting_service.models import DB, Election, Participant, Vote
 
 
 service_bp = Blueprint('admin', __name__)
