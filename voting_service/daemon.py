@@ -21,6 +21,7 @@ if __name__ == '__main__':
             values = msg['data'].decode('utf-8').split()
             ballot_uuid = UUID(values[0])
             poll_number = int(values[1])
+            user_jmbg = values[2]
         except (KeyError, TypeError, AttributeError, UnicodeDecodeError):
             continue
 
@@ -46,6 +47,6 @@ if __name__ == '__main__':
                 invalid = "Invalid poll number."
 
             vote = Vote(ballot_uuid=ballot_uuid, poll_number=poll_number,
-                        invalid=invalid, election_id=e.id)
+                        user_jmbg=user_jmbg, invalid=invalid, election_id=e.id)
             DB.session.add(vote)
             DB.session.commit()

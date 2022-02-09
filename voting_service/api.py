@@ -12,7 +12,7 @@ service_bp = Blueprint('voting', __name__)
 
 
 @service_bp.post('/vote')
-@auth_jwt()
+@auth_jwt(require_claims=True, require_role='user')
 @produces(schemas.EmptyResponse.ONE)
 def vote():
     try:
@@ -23,6 +23,8 @@ def vote():
         raise BadRequest("Field file is missing.") from e
     except UnicodeDecodeError as e:
         raise BadRequest("Bad file encoding.") from e
+
+    user_jmbg = get_jwt()['jmbg']
 
     # Check and gather ballot data
     content = []
@@ -43,7 +45,7 @@ def vote():
         except ValueError as e:
             raise error from e
 
-        content.append((ballot_uuid, poll_number))
+        content.append((ballot_uuid, poll_number, user_jmbg))
 
     # Publish ballot data to Redis
     r = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)

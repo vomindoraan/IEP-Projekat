@@ -63,7 +63,7 @@ def refresh_token():
 
 
 @service_bp.post('/delete')
-@auth_jwt(admin=True)
+@auth_jwt(require_role='admin')
 @consumes(schemas.UserDeletion.ONE)
 @produces(schemas.EmptyResponse.ONE)
 def delete_user(data):

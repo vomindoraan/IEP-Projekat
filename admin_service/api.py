@@ -9,7 +9,7 @@ service_bp = Blueprint('admin', __name__)
 
 
 @service_bp.post('/createParticipant')
-@auth_jwt(admin=True)
+@auth_jwt(require_role='admin')
 @consumes(schemas.ParticipantCreation.ONE)
 @produces(schemas.CreatedParticipant.ONE)
 def create_participant(data):
@@ -20,14 +20,14 @@ def create_participant(data):
 
 
 @service_bp.get('/getParticipants')
-@auth_jwt(admin=True)
+@auth_jwt(require_role='admin')
 @produces(schemas.Participant.MANY)
 def get_participants():
     return Participant.query.all()
 
 
 @service_bp.post('/createElection')
-@auth_jwt(admin=True)
+@auth_jwt(require_role='admin')
 @consumes(schemas.ElectionCreation.ONE)
 @produces(schemas.PollNumbers.ONE)
 def create_election(data):
@@ -66,14 +66,14 @@ def create_election(data):
 
 
 @service_bp.get('/getElections')
-@auth_jwt(admin=True)
+@auth_jwt(require_role='admin')
 @produces(schemas.Election.MANY)
 def get_elections():
     return Election.query.all()
 
 
 @service_bp.get('/getResults')
-@auth_jwt(admin=True)
+@auth_jwt(require_role='admin')
 @consumes(schemas.ResultsQuery.ONE)
 @produces(schemas.Results.ONE)
 def get_results(data):

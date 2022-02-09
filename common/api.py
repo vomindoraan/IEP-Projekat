@@ -11,7 +11,7 @@ from common.schemas import BaseSchema
 
 # region Route middleware
 
-def auth_jwt(*jwt_args, require_claims=False, admin=False, **jwt_kwargs):
+def auth_jwt(*jwt_args, require_claims=False, require_role=None, **jwt_kwargs):
     # TODO: Write docstring
     def decorator(handler):
         @wraps(handler)
@@ -25,8 +25,7 @@ def auth_jwt(*jwt_args, require_claims=False, admin=False, **jwt_kwargs):
             if require_claims and missing_claims:
                 raise NoAuthorizationError("Bad Authorization Header")
 
-            missing_admin_role = jwt.get('role') != 'admin'
-            if admin and missing_admin_role:
+            if require_role is not None and jwt.get('role') != require_role:
                 raise NoAuthorizationError("Missing Authorization Header")
 
             return handler(*args, **kwargs)

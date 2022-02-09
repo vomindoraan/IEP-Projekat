@@ -11,11 +11,10 @@ class Participant(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     name = DB.Column(DB.String(256), nullable=False)
     individual = DB.Column(DB.Boolean, nullable=False)
+    poll_number = DB.Column(DB.Integer)
 
     election_id = DB.Column(DB.Integer,
                             DB.ForeignKey('elections.id', ondelete='SET NULL'))
-    poll_number = DB.Column(DB.Integer)
-    result = DB.Column(DB.Integer)
 
 
 class Election(DB.Model):
@@ -35,6 +34,7 @@ class Vote(DB.Model):
     id = DB.Column(DB.Integer, primary_key=True)
     ballot_uuid = DB.Column(UUIDType, nullable=False)
     poll_number = DB.Column(DB.Integer, nullable=False)
+    user_jmbg = DB.Column(DB.String(256), nullable=False)
     invalid = DB.Column(DB.String(256))
 
     election_id = DB.Column(DB.Integer,
