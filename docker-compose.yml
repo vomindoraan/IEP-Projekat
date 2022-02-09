@@ -2,10 +2,7 @@ services:
   # region Authentication
 
   auth-migration:
-    build:
-      context: .
-      args:
-        - SERVICE=auth_service
+    build: .
     image: auth-service
     depends_on:
       authdb:
@@ -17,10 +14,7 @@ services:
     command: python -m auth_service.migrate
 
   auth-service:
-    build:
-      context: .
-      args:
-        - SERVICE=auth_service
+    build: .
     image: auth-service
     depends_on:
       - auth-migration
@@ -37,10 +31,7 @@ services:
   # region Voting
 
   voting-migration:
-    build:
-      context: .
-      args:
-        - SERVICE=voting_service
+    build: .
     image: voting-service
     depends_on:
       votedb:
@@ -52,10 +43,7 @@ services:
     command: python -m voting_service.migrate
 
   voting-service:
-    build:
-      context: .
-      args:
-        - SERVICE=voting_service
+    build: .
     image: voting-service
     depends_on:
       - voting-migration
@@ -67,10 +55,7 @@ services:
     command: python -m voting_service
 
   voting-daemon:
-    build:
-      context: .
-      args:
-        - SERVICE=voting_service
+    build: .
     image: voting-service
     restart: always
     depends_on:
@@ -85,10 +70,7 @@ services:
   # region Administration
 
   admin-service:
-    build:
-      context: .
-      args:
-        - SERVICE=admin_service
+    build: .
     image: admin-service
     depends_on:
       - voting-migration
@@ -101,10 +83,7 @@ services:
     command: python -m admin_service
 
   extra-service:
-    build:
-      context: .
-      args:
-        - SERVICE=admin_service
+    build: .
     image: admin-service
     depends_on:
       - voting-migration

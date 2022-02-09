@@ -5,9 +5,7 @@ WORKDIR /usr/local/app
 COPY ./requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt
 
-ARG SERVICE=auth_service
-
 COPY ./common ./common
-COPY ./$SERVICE ./$SERVICE
-
-CMD python -m $SERVICE
+COPY ./auth_service ./auth_service
+COPY ./admin_service ./admin_service
+COPY ./voting_service ./voting_service
