@@ -14,9 +14,9 @@ COLLAPSE_ERROR_MESSAGES = parse_bool(os.getenv('COLLAPSE_ERROR_MESSAGES', True))
 RETRY_DELAY = int(os.getenv('RETRY_DELAY', 5))
 
 # Server config
-SERVER_HOST = os.getenv('SERVER_HOST', '0.0.0.0')
-SERVER_PORT = int(os.getenv('SERVER_PORT', 9000))
-SERVER_NAME = f'{SERVER_HOST}:{SERVER_PORT}'
+APP_HOST = os.getenv('APP_HOST', '0.0.0.0')
+APP_PORT = int(os.getenv('APP_PORT', 9000))
+# SERVER_NAME = f'{APP_HOST}:{APP_PORT}'
 TIMEZONE = ZoneInfo(os.getenv('TIMEZONE', tzlocal.get_localzone().key))
 
 # JWT config
