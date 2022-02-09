@@ -1,23 +1,7 @@
 services:
   # region Authentication
 
-  auth-service:
-    build:
-      context: .
-      args:
-        - SERVICE=auth_service
-    image: auth-service
-    depends_on:
-      - auth-service-migration
-    networks:
-      - auth-net
-    ports:
-      - 9000:9000
-    environment:
-      - DB_HOST=authdb
-    command: python -m auth_service
-
-  auth-service-migration:
+  auth-migration:
     build:
       context: .
       args:
@@ -32,27 +16,27 @@ services:
       - DB_HOST=authdb
     command: python -m auth_service.migrate
 
+  auth-service:
+    build:
+      context: .
+      args:
+        - SERVICE=auth_service
+    image: auth-service
+    depends_on:
+      - auth-migration
+    networks:
+      - auth-net
+    ports:
+      - 9000:9000
+    environment:
+      - DB_HOST=authdb
+    command: python -m auth_service
+
   # endregion
 
   # region Administration
 
-  admin-service:
-    build:
-      context: .
-      args:
-        - SERVICE=admin_service
-    image: admin-service
-    depends_on:
-      - admin-service-migration
-    networks:
-      - vote-net
-    ports:
-      - 9010:9000
-    environment:
-      - DB_HOST=votedb
-    command: python -m admin_service
-
-  admin-service-migration:
+  admin-migration:
     build:
       context: .
       args:
@@ -67,6 +51,22 @@ services:
       - DB_HOST=votedb
     command: python -m admin_service.migrate
 
+  admin-service:
+    build:
+      context: .
+      args:
+        - SERVICE=admin_service
+    image: admin-service
+    depends_on:
+      - admin-migration
+    networks:
+      - vote-net
+    ports:
+      - 9010:9000
+    environment:
+      - DB_HOST=votedb
+    command: python -m admin_service
+
   lookup-service:
     build:
       context: .
@@ -74,7 +74,7 @@ services:
         - SERVICE=admin_service
     image: admin-service
     depends_on:
-      - admin-service-migration
+      - admin-migration
     networks:
       - vote-net
     ports:
