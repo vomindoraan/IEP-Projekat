@@ -90,9 +90,10 @@ def get_results(data):
     return {'invalid_votes': invalid_votes}
 
 
-lookup_bp = Blueprint('lookup', __name__)
+extra_bp = Blueprint('extra', __name__)
 
-@lookup_bp.get('/lookup')
+
+@extra_bp.get('/lookup')
 @auth_jwt()
 @consumes(schemas.LookupQuery.ONE)
 @produces(schemas.Election.MANY)

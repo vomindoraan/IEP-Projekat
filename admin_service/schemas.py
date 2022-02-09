@@ -107,7 +107,7 @@ class Results(APIResponse):
 # endregion
 
 
-# region Lookup requests
+# region Extra requests
 
 class LookupQuery(APIQuery):
     name = MM.String(required=True)

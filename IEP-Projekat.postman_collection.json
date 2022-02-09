@@ -310,7 +310,7 @@
 			"response": []
 		},
 		{
-			"name": "lookup/lookup",
+			"name": "extra/lookup",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -328,9 +328,9 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{lookup_url}}/lookup",
+					"raw": "{{extra_url}}/lookup",
 					"host": [
-						"{{lookup_url}}"
+						"{{extra_url}}"
 					],
 					"path": [
 						"lookup"
@@ -402,7 +402,7 @@
 			"value": "http://0.0.0.0:9010"
 		},
 		{
-			"key": "lookup_url",
+			"key": "extra_url",
 			"value": "http://0.0.0.0:9011"
 		},
 		{

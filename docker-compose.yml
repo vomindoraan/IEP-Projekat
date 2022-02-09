@@ -67,7 +67,7 @@ services:
       - DB_HOST=votedb
     command: python -m admin_service
 
-  lookup-service:
+  extra-service:
     build:
       context: .
       args:
@@ -81,7 +81,7 @@ services:
       - 9011:9000
     environment:
       - DB_HOST=votedb
-    command: python -m admin_service.lookup
+    command: python -m admin_service.extra
 
   # endregion
 
