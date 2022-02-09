@@ -10,6 +10,9 @@ def create_app():
 
     JWTManager(app)
 
+    from voting_service import models
+    models.DB.init_app(app)
+
     from . import schemas
     schemas.MM.init_app(app)
 
