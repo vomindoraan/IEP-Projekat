@@ -356,8 +356,14 @@
 					}
 				],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\r\n}"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "temp.csv"
+						}
+					]
 				},
 				"url": {
 					"raw": "{{voting_url}}/vote",

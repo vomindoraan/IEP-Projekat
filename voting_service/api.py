@@ -20,7 +20,7 @@ def vote():
         stream = io.StringIO(f.stream.read().decode('utf-8'))
         csv_in = csv.reader(stream)
     except KeyError as e:
-        raise BadRequest("Field file missing.") from e
+        raise BadRequest("Field file is missing.") from e
     except UnicodeDecodeError as e:
         raise BadRequest("Bad file encoding.") from e
 

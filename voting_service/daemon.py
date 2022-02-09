@@ -35,10 +35,9 @@ if __name__ == '__main__':
                 continue
 
             invalid = None
-            if Vote.query.filter(Vote.ballot_uuid == ballot_uuid):
+            if Vote.query.filter(Vote.ballot_uuid == ballot_uuid).first():
                 invalid = "Duplicate ballot."
-
-            if not (
+            elif not (
                 Participant.query
                 .filter(Participant.election_id == e.id,
                         Participant.poll_number == poll_number)
