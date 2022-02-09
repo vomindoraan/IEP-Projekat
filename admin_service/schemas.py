@@ -101,8 +101,18 @@ class ResultsQuery(APIQuery):
 
 # region Results responses
 
+class InvalidVote(SQLAlchemyMixin, APIResponse):
+    class Meta(APIResponse.Meta):
+        model = models.Vote
+
+    user_jmbg = MM.auto_field(data_key='electionOfficialJmbg')
+    ballot_uuid = MM.auto_field(data_key='ballotGuid')
+    poll_number = MM.auto_field(data_key='pollNumber')
+    invalid = MM.auto_field(data_key='reason')
+
+
 class Results(APIResponse):
-    pass
+    invalid_votes = MM.Nested(InvalidVote, many=True, data_key='invalidVotes')
 
 # endregion
 
