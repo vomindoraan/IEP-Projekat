@@ -36,7 +36,7 @@ if __name__ == '__main__':
     while True:
         try:
             main()
-        except Exception:
-            pass
+        except Exception as e:
+            e.print_exc()
         else:
             break
