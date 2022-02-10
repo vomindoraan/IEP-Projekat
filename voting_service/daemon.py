@@ -36,12 +36,11 @@ if __name__ == '__main__':
                 continue
 
             invalid = None
-            if Vote.query.filter(Vote.ballot_uuid == ballot_uuid).first():
+            if Vote.query.filter_by(ballot_uuid=ballot_uuid).first():
                 invalid = "Duplicate ballot."
             elif not (
                 Participant.query
-                .filter(Participant.election_id == e.id,
-                        Participant.poll_number == poll_number)
+                .filter_by(election_id=e.id, poll_number=poll_number)
                 .first()
             ):
                 invalid = "Invalid poll number."

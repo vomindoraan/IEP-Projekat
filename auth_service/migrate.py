@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
         upgrade()
 
-        if not User.query.filter(User.email == 'admin@admin.com').first():
+        if not User.query.filter_by(email='admin@admin.com').first():
             admin = User(
                 jmbg='0000000000000',
                 email='admin@admin.com',

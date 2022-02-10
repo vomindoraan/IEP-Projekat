@@ -14,7 +14,7 @@ service_bp = Blueprint('auth', __name__)
 @consumes(schemas.UserRegistration.ONE)
 @produces(schemas.EmptyResponse.ONE)
 def register_user(data):
-    if User.query.filter(User.email == data['email']).first():
+    if User.query.filter_by(email=data['email']).first():
         raise BadRequest("Email already exists.")
 
     user = User(**data)
@@ -26,7 +26,7 @@ def register_user(data):
 @consumes(schemas.UserLogin.ONE)
 @produces(schemas.TokenPair.ONE)
 def login_user(data):
-    user = User.query.filter(User.email == data['email']).first()
+    user = User.query.filter_by(email=data['email']).first()
     if not user or user.password != data['password']:
         raise BadRequest("Invalid credentials.")
 
@@ -67,7 +67,7 @@ def refresh_token():
 @consumes(schemas.UserDeletion.ONE)
 @produces(schemas.EmptyResponse.ONE)
 def delete_user(data):
-    user = User.query.filter(User.email == data['email']).first()
+    user = User.query.filter_by(email=data['email']).first()
     if not user:
         raise BadRequest("Unknown user.")
 
