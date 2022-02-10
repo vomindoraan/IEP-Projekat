@@ -1,4 +1,4 @@
-from datetime import datetime
+from collections import defaultdict
 
 from sqlalchemy import func, literal
 
@@ -125,10 +125,24 @@ def get_results(data):
         )
         participants = [p._asdict() for p in q]
 
-        # total_seats = 250
-        # threshold = 0.05
-        # while total_seats > 0:
-        #     break
+        total_seats = 250
+        threshold = 0.05 * total_seats
+        og_votes = {p['poll_number']: p['votes'] for p in participants}
+        votes = og_votes.copy()
+        seats = defaultdict(int)
+        d = True
+        while d:
+            while sum(seats.values()) < total_seats:
+                next_seat = max(votes, key=votes.get)
+                seats[next_seat] += 1
+                votes[next_seat] = og_votes[next_seat] / (seats[next_seat] + 1)
+            d = False
+            for k, v in seats.items():
+                if v != 0 and v < threshold:
+                    votes[k] = seats[k] = 0
+                    d = True
+        participants = [{**p, 'result': seats[p['poll_number']]}
+                        for p in participants]
 
     invalid_votes = Vote.query.filter(Vote.election_id == eid,
                                       Vote.invalid != None)

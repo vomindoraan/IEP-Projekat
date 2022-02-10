@@ -64,3 +64,15 @@ docker tag <mgr_ip>:5000/<image> <image>
 <copy docker-stack.yml to manager>
 docker stack deploy --compose-file docker-stack.yml <stack>
 docker service ls
+
+
+
+DB_PORT=3306 python -m auth_service.migrate
+DB_PORT=3316 python -m voting_service.migrate
+
+APP_PORT=9000 DB_PORT=3306 python -m auth_service
+APP_PORT=9010 DB_PORT=3316 python -m admin_service
+APP_PORT=9011 DB_PORT=3316 python -m admin_service.extra
+APP_PORT=9020 DB_PORT=3316 python -m voting_service
+
+DB_PORT=3316 python -m voting_service.daemon
