@@ -31,7 +31,7 @@ if __name__ == '__main__':
         with app.app_context():
             print(values, end="\t")
 
-            now = datetime.now(ZoneInfo('Europe/Belgrade'))  # TODO
+            now = datetime.now(config.TIMEZONE)
             e = (
                 Election.query
                 .filter(Election.start <= now, now <= Election.end)

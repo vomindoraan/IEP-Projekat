@@ -2,8 +2,6 @@ import os
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 
-import tzlocal
-
 from common.utils import parse_bool
 
 
@@ -18,7 +16,7 @@ RETRY_DELAY = int(os.getenv('RETRY_DELAY', 5))
 APP_HOST = os.getenv('APP_HOST', '0.0.0.0')
 APP_PORT = int(os.getenv('APP_PORT', 9000))
 # SERVER_NAME = f'{APP_HOST}:{APP_PORT}'
-TIMEZONE = ZoneInfo(os.getenv('TIMEZONE', tzlocal.get_localzone().key))
+TIMEZONE = ZoneInfo(os.getenv('TIMEZONE', 'Europe/Belgrade'))
 
 # JWT config
 JWT_SECRET_KEY = '13С113ИЕП'
