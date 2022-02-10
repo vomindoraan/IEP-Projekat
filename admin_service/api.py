@@ -1,8 +1,10 @@
 from datetime import datetime
 
+from sqlalchemy import func
+
 from common.api import *
-from . import schemas
 from voting_service.models import DB, Election, Participant, Vote
+from . import schemas
 
 
 service_bp = Blueprint('admin', __name__)
@@ -78,16 +80,44 @@ def get_elections():
 @produces(schemas.Results.ONE)
 def get_results(data):
     eid = data['election_id']
-    if not (e := Election.query.get(eid)):
+    e = Election.query.get(eid)
+    if not e:
         raise BadRequest("Election does not exist.")
     elif e.end > datetime.now(e.end.tzinfo):
         raise BadRequest("Election is ongoing.")
 
-    # for p in Participant.query.filter(Participant.election_id == eid):
+    participants_q = Participant.query.filter_by(election_id=eid)
+    votes_q = Vote.query.filter_by(election_id=eid)
 
-    invalid_votes = Vote.query.filter(Vote.invalid is not None)
+    if e.individual:
+        # Presidential elections
+        total_votes = votes_q.count()
+        sq = (
+            votes_q
+            .with_entities(
+                Vote.poll_number,
+                func.round(func.count('*') / total_votes, 2).label('result'),
+            )
+            .group_by(Vote.poll_number)
+            .subquery()
+        )
+        q = (
+            participants_q
+            .with_entities(
+                Participant.poll_number,
+                Participant.name,
+                func.ifnull(sq.c.result, 0).label('result'),  # Must relabel
+            )
+            .outerjoin(sq, Participant.poll_number == sq.c.poll_number)
+        )
+        participants = (p._asdict() for p in q)
+    else:
+        # Parliamentary elections
+        pass  # TODO
 
-    return {'invalid_votes': invalid_votes}
+    invalid_votes = votes_q.filter(Vote.invalid != None)
+
+    return {'participants': participants, 'invalid_votes': invalid_votes}
 
 
 extra_bp = Blueprint('extra', __name__)
