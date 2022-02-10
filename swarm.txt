@@ -1,0 +1,66 @@
+./docker-machine create manager
+(docker-machine-driver-vmware)
+
+./docker-machine create worker0
+./docker-machine create worker1
+
+./docker-machine ls
+
+./docker-machine ssh manager
+docker swarm init --advertise-addr <mgr_ip>
+docker info
+docker node ls
+
+./docker-machine ssh worker0/1
+docker swarm join --token <token> <mgr_ip>
+docker swarm leave
+
+
+
+./docker machine ssh manager
+docker service create --name <name> --replicas <n> --publish <port:port> <image>
+docker service ls
+docker service ps <service>
+docker service inspect --pretty <service>
+
+./docker machine ip <machine>
+
+
+
+./docker machine ssh manager
+docker service update --image <image:version>
+docker service scale <service>=<n>
+docker service rm <service>
+
+docker node update --label-add ID=1
+docker service create --name <name> --replicas <n> --publish <port:port> --constraint node.labels.id==<id> <image>
+
+
+
+Docker Desktop > Dashboard > Settings > Docker Engine >
+"insecure-registries": [<mgr_ip>:5000]
+
+./docker machine ssh manager
+sudo su
+vi /var/lib/boot2docker/profile
+EXTRA_ARGS += '--insecure-registry <mgr_ip>:5000'
+exit
+./docker machine restart manager
+
+./docker machine ssh manager
+docker service create --name registry --replicas 1 --publish 5000:5000 registry:2
+
+http://<mgr_ip>:5000/v2/_catalog
+
+
+
+docker build . -t <image>
+docker tag <image> <mgr_ip>:5000/<image>
+docker push <mgr_ip>:5000/<image>
+
+./docker machine ssh manager
+docker pull <mgr_ip>:5000/<image>
+docker tag <mgr_ip>:5000/<image> <image>
+<copy docker-stack.yml to manager>
+docker stack deploy --compose-file docker-stack.yml <stack>
+docker service ls

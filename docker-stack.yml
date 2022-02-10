@@ -1,0 +1,158 @@
+version: '3'
+
+services:
+  # region Authentication
+
+  auth-migration:
+    image: iep-projekat
+    networks:
+      - auth-net
+    environment:
+      - DB_HOST=authdb
+    command: python -m auth_service.migrate
+
+  auth-service:
+    image: iep-projekat
+    depends_on:
+      - auth-migration
+    networks:
+      - auth-net
+    ports:
+      - 9000:9000
+    environment:
+      - DB_HOST=authdb
+    command: python -m auth_service
+
+  # endregion
+
+  # region Voting
+
+  voting-migration:
+    image: iep-projekat
+    networks:
+      - vote-net
+    environment:
+      - DB_HOST=votedb
+    command: python -m voting_service.migrate
+
+  voting-service:
+    image: iep-projekat
+    depends_on:
+      - redis
+    networks:
+      - redis-net
+    ports:
+      - 9020:9000
+    environment:
+      - REDIS_HOST=redis
+    command: python -m voting_service
+    deploy:
+      replicas: 3
+
+  voting-daemon:
+    image: iep-projekat
+    restart: always
+    depends_on:
+      - voting-migration
+      - redis
+    networks:
+      - vote-net
+      - redis-net
+    environment:
+      - DB_HOST=votedb
+      - REDIS_HOST=redis
+    command: python -m voting_service.daemon
+
+  # endregion
+
+  # region Administration
+
+  admin-service:
+    image: iep-projekat
+    depends_on:
+      - voting-migration
+    networks:
+      - vote-net
+    ports:
+      - 9010:9000
+    environment:
+      - DB_HOST=votedb
+    command: python -m admin_service
+
+  extra-service:
+    image: iep-projekat
+    depends_on:
+      - voting-migration
+    networks:
+      - vote-net
+    ports:
+      - 9011:9000
+    environment:
+      - DB_HOST=votedb
+    command: python -m admin_service.extra
+
+  # endregion
+
+  # region Persistence
+
+  redis:
+    image: redis
+    restart: always
+    networks:
+      - redis-net
+    ports:
+      - 6379:6379
+
+  authdb:
+    image: mysql
+    restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+    volumes:
+      - authdb-vol:/var/lib/mysql
+    networks:
+      - auth-net
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  votedb:
+    image: mysql
+    restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+    volumes:
+      - votedb-vol:/var/lib/mysql
+    networks:
+      - vote-net
+    ports:
+      - 3316:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  adminer:
+    image: adminer
+    networks:
+      - auth-net
+      - vote-net
+    ports:
+      - 8080:8080
+
+  # endregion
+
+volumes:
+  authdb-vol:
+  votedb-vol:
+
+networks:
+  auth-net:
+    driver: overlay
+  vote-net:
+    driver: overlay
+  redis-net:
+    driver: overlay
