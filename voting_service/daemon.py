@@ -1,3 +1,6 @@
+from zoneinfo import ZoneInfo
+
+
 if __name__ == '__main__':
     from datetime import datetime
     from uuid import UUID
@@ -28,7 +31,7 @@ if __name__ == '__main__':
         with app.app_context():
             print(values, end="\t")
 
-            now = datetime.now(config.TIMEZONE)
+            now = datetime.now(ZoneInfo('Europe/Belgrade'))  # TODO
             e = (
                 Election.query
                 .filter(Election.start <= now, now <= Election.end)

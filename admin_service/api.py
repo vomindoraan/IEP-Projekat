@@ -83,8 +83,9 @@ def get_results(data):
     e = Election.query.get(eid)
     if not e:
         raise BadRequest("Election does not exist.")
-    elif e.end > datetime.now(e.end.tzinfo):
-        raise BadRequest("Election is ongoing.")
+    # TODO
+    # elif e.end > datetime.now(e.end.tzinfo):
+    #     raise BadRequest("Election is ongoing.")
 
     participants_q = Participant.query.filter_by(election_id=eid)
     votes_q = Vote.query.filter_by(election_id=eid, invalid=None)
