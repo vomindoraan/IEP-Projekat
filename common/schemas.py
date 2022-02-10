@@ -1,4 +1,5 @@
 import re
+from datetime import timezone
 from itertools import chain, zip_longest
 
 import ujson
@@ -21,6 +22,14 @@ class DateTimeField(MM.AwareDateTime):
         if default_timezone is None:
             default_timezone = config.TIMEZONE
         super().__init__(*args, default_timezone=default_timezone, **kwargs)
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        dt = value.astimezone(timezone.utc)
+        return super()._serialize(dt, attr, obj, **kwargs)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        dt = super()._deserialize(value, attr, data, **kwargs)
+        return dt.astimezone(timezone.utc)
 
 # endregion
 

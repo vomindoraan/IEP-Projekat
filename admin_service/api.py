@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import func, literal
 
@@ -37,8 +37,8 @@ def create_election(data):
                         individual=data['individual'])
     # TODO: Replace loop with filter
     for e in Election.query.all():
-        start = e.start.astimezone(election.start.tzinfo)
-        end = e.end.astimezone(election.start.tzinfo)
+        start = e.start.astimezone(timezone.utc)
+        end = e.end.astimezone(timezone.utc)
         if (
             start < election.start and end >= election.start or
             election.start < start and election.end >= start
@@ -83,9 +83,8 @@ def get_results(data):
     e = Election.query.get(eid)
     if not e:
         raise BadRequest("Election does not exist.")
-    # TODO
-    # elif e.end > datetime.now(e.end.tzinfo):
-    #     raise BadRequest("Election is ongoing.")
+    elif e.end > datetime.now(timezone.utc):
+        raise BadRequest("Election is ongoing.")
 
     participants_q = Participant.query.filter_by(election_id=eid)
     votes_q = Vote.query.filter_by(election_id=eid, invalid=None)

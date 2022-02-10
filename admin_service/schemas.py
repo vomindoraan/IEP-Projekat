@@ -83,8 +83,8 @@ class Election(SQLAlchemyMixin, APIResponse):
         envelope_many_key = 'elections'
 
     id = MM.auto_field()
-    start = MM.auto_field()
-    end = MM.auto_field()
+    start = DateTimeField()
+    end = DateTimeField()
     individual = MM.auto_field()
     participants = MM.Nested(ElectionParticipant, many=True)
 
