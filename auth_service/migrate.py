@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 MG = Migrate(directory=f'{os.path.dirname(__file__)}/migrations')
 
 
-if __name__ == '__main__':
+def main():
     from flask_migrate import init, migrate, upgrade
     from sqlalchemy_utils import create_database, database_exists
 
@@ -43,3 +43,13 @@ if __name__ == '__main__':
             )
             DB.session.add(admin)
             DB.session.commit()
+
+
+if __name__ == '__main__':
+    while True:
+        try:
+            main()
+        except Exception:
+            pass
+        else:
+            break
