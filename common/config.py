@@ -11,6 +11,7 @@ from common.utils import parse_bool
 ENV = os.getenv('FLASK_ENV', 'development')
 DEBUG = parse_bool(os.getenv('FLASK_DEBUG', True))
 COLLAPSE_ERROR_MESSAGES = parse_bool(os.getenv('COLLAPSE_ERROR_MESSAGES', True))
+JSON_SORT_KEYS = parse_bool(os.getenv('JSON_SORT_KEYS', False))
 RETRY_DELAY = int(os.getenv('RETRY_DELAY', 5))
 
 # Server config

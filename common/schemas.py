@@ -46,6 +46,7 @@ class BaseSchema(MM.Schema, metaclass=BaseSchemaMeta):
 
     class Meta:  # Schema options, not related to metaclass.
         datetimeformat = 'iso'
+        ordered = True
         render_module = ujson
         unknown = EXCLUDE
 
@@ -196,7 +197,6 @@ class CollapseErrorsMessagesMixin(BaseSchema):
 
 class APIRequest(CollapseErrorsMessagesMixin, BaseSchema):
     class Meta(BaseSchema.Meta):
-        ordered = True
         unknown = RAISE
 
     @pre_load
