@@ -1,6 +1,10 @@
 from common.config import *
 
 
+# Business logic config
+ELECTIONS_TOTAL_SEATS = int(os.getenv('ELECTIONS_TOTAL_SEATS', 250))
+ELECTIONS_THRESHOLD_PCT = int(os.getenv('ELECTIONS_THRESHOLD_PCT', 5))
+
 # Database config
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_PORT = int(os.getenv('DB_PORT', 3306))

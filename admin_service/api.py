@@ -3,8 +3,9 @@ from collections import defaultdict
 from sqlalchemy import func, literal
 
 from common.api import *
+from common.utils import filter_values
 from voting_service.models import DB, Election, Participant, Vote
-from . import schemas
+from . import config, schemas
 
 
 service_bp = Blueprint('admin', __name__)
@@ -125,24 +126,23 @@ def get_results(data):
         )
         participants = [p._asdict() for p in q]
 
-        total_seats = 250
-        threshold = 0.05 * total_seats
-        og_votes = {p['poll_number']: p['votes'] for p in participants}
-        votes = og_votes.copy()
+        threshold = (config.ELECTIONS_TOTAL_SEATS *
+                     config.ELECTIONS_THRESHOLD_PCT / 100)
+        votes = {p['poll_number']: p['votes'] for p in participants}
+        quots = votes.copy()
         seats = defaultdict(int)
-        d = True
-        while d:
-            while sum(seats.values()) < total_seats:
-                next_seat = max(votes, key=votes.get)
+        for _ in range(2):
+            while sum(seats.values()) < config.ELECTIONS_TOTAL_SEATS:
+                next_seat = max(quots, key=quots.get)
                 seats[next_seat] += 1
-                votes[next_seat] = og_votes[next_seat] / (seats[next_seat] + 1)
-            d = False
-            for k, v in seats.items():
-                if v != 0 and v < threshold:
-                    votes[k] = seats[k] = 0
-                    d = True
-        participants = [{**p, 'result': seats[p['poll_number']]}
-                        for p in participants]
+                quots[next_seat] = votes[next_seat] / (seats[next_seat] + 1)
+            if under_threshold := filter_values(lambda v: v < threshold, seats):
+                for k in under_threshold:
+                    seats[k] = quots[k] = 0
+            else:
+                break
+        for p in participants:
+            p['result'] = seats[p['poll_number']]
 
     invalid_votes = Vote.query.filter(Vote.election_id == eid,
                                       Vote.invalid != None)
