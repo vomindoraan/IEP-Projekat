@@ -101,6 +101,15 @@ class ResultsQuery(APIQuery):
 
 # region Results responses
 
+class ParticipantResult(SQLAlchemyMixin, APIResponse):
+    class Meta(APIResponse.Meta):
+        model = models.Participant
+
+    poll_number = MM.auto_field(data_key='pollNumber')
+    name = MM.auto_field()
+    result = MM.Number()
+
+
 class InvalidVote(SQLAlchemyMixin, APIResponse):
     class Meta(APIResponse.Meta):
         model = models.Vote
@@ -112,6 +121,7 @@ class InvalidVote(SQLAlchemyMixin, APIResponse):
 
 
 class Results(APIResponse):
+    participants = MM.Nested(ParticipantResult, many=True)
     invalid_votes = MM.Nested(InvalidVote, many=True, data_key='invalidVotes')
 
 # endregion

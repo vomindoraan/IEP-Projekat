@@ -26,6 +26,7 @@ class Election(DB.Model):
     individual = DB.Column(DB.Boolean, nullable=False)
 
     participants = DB.relationship('Participant')
+    votes = DB.relationship('Vote')
 
 
 class Vote(DB.Model):
