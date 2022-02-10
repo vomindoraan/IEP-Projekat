@@ -154,12 +154,20 @@ extra_bp = Blueprint('extra', __name__)
 
 
 @extra_bp.get('/lookup')
-@auth_jwt()
-@consumes(schemas.LookupQuery.ONE)
-@produces(schemas.Election.MANY)
-def lookup(data):
+# @auth_jwt()
+@produces(schemas.ElectionStats.MANY)
+def lookup():
     return (
         Election.query
-        .join(Election.participants)
-        .filter(Participant.name.contains(data['name']))
+        .with_entities(Election.id,
+                       func.count(Participant.id).label('participant_count'))
+        .join(Participant)
+        .group_by(Election.id)
     )
+    # return (
+    #     DB.session
+    #     .query(Election.id,
+    #            func.count(Participant.id).label('participant_count'))
+    #     .join(Election.participants)
+    #     .group_by(Election.id)
+    # )

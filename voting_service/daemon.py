@@ -29,13 +29,13 @@ if __name__ == '__main__':
             continue
 
         with app.app_context():
-            print(values, end="\t")
-
             now = datetime.now(ZoneInfo('Europe/Belgrade'))  # TODO
+            print(values, '\n', now, Election.query.first().start, end="\t")
+
             e = (
                 Election.query
                 .filter(Election.start <= now, now <= Election.end)
-                .first()  # TODO: What if there are multiple elections?
+                .first()  # TODO: What if there are multiple concurrent elections?
             )
             if not e:
                 print("No ongoing election")

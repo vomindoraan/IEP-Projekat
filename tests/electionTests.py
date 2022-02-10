@@ -196,9 +196,6 @@ def setUpOverallapingElectionsErrorTest ( withAuthentication, authenticationAddr
         end           = operation ( end, step );
         data["start"] = start.isoformat ( );
         data["end"]   = end.isoformat ( );
-        data["participants"] = [p["id"] for p in data["participants"]];
-        if "id" in data:
-            del data["id"];
 
 
         return (url, "", False);

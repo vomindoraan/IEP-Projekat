@@ -127,9 +127,13 @@ class Results(APIResponse):
 # endregion
 
 
-# region Extra requests
+# region Extra responses
 
-class LookupQuery(APIQuery):
-    name = MM.String(required=True)
+class ElectionStats(SQLAlchemyMixin, APIResponse):
+    class Meta(APIResponse.Meta):
+        model = models.Election
+
+    id = MM.auto_field(data_key='electionId')
+    participant_count = MM.Integer(data_key='participantCount')
 
 # endregion
