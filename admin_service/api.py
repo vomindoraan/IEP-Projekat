@@ -129,7 +129,8 @@ def get_results(data):
         # while total_seats > 0:
         #     break
 
-    invalid_votes = Vote.query.filter(Vote.invalid != None)
+    invalid_votes = Vote.query.filter(Vote.election_id == eid,
+                                      Vote.invalid != None)
 
     return {'participants': participants, 'invalid_votes': invalid_votes}
 
