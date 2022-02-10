@@ -2,8 +2,7 @@ services:
   # region Authentication
 
   auth-migration:
-    build: .
-    image: auth-service
+    image: iep-projekat
     depends_on:
       authdb:
         condition: service_healthy
@@ -14,8 +13,7 @@ services:
     command: python -m auth_service.migrate
 
   auth-service:
-    build: .
-    image: auth-service
+    image: iep-projekat
     depends_on:
       - auth-migration
     networks:
@@ -31,8 +29,7 @@ services:
   # region Voting
 
   voting-migration:
-    build: .
-    image: voting-service
+    image: iep-projekat
     depends_on:
       votedb:
         condition: service_healthy
@@ -43,10 +40,8 @@ services:
     command: python -m voting_service.migrate
 
   voting-service:
-    build: .
-    image: voting-service
+    image: iep-projekat
     depends_on:
-      - voting-migration
       - redis
     networks:
       - redis-net
@@ -57,15 +52,16 @@ services:
     command: python -m voting_service
 
   voting-daemon:
-    build: .
-    image: voting-service
+    image: iep-projekat
     restart: always
     depends_on:
+      - voting-migration
       - redis
     networks:
       - vote-net
       - redis-net
     environment:
+      - DB_HOST=votedb
       - REDIS_HOST=redis
     command: python -m voting_service.daemon
 
@@ -74,8 +70,7 @@ services:
   # region Administration
 
   admin-service:
-    build: .
-    image: admin-service
+    image: iep-projekat
     depends_on:
       - voting-migration
     networks:
@@ -87,8 +82,7 @@ services:
     command: python -m admin_service
 
   extra-service:
-    build: .
-    image: admin-service
+    image: iep-projekat
     depends_on:
       - voting-migration
     networks:

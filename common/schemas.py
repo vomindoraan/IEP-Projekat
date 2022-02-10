@@ -3,8 +3,8 @@ from itertools import chain, zip_longest
 
 import ujson
 from flask_marshmallow import Marshmallow
-from marshmallow import EXCLUDE, RAISE, ValidationError, post_dump, pre_load
-from marshmallow.decorators import VALIDATES_SCHEMA
+from marshmallow import EXCLUDE, RAISE, ValidationError
+from marshmallow.decorators import VALIDATES_SCHEMA, post_dump, pre_load
 from marshmallow.exceptions import SCHEMA as SCHEMA_KEY
 
 from common import config

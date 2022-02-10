@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import func
+from sqlalchemy import func, literal
 
 from common.api import *
 from voting_service.models import DB, Election, Participant, Vote
@@ -37,11 +37,11 @@ def create_election(data):
                         individual=data['individual'])
     # TODO: Replace loop with filter
     for e in Election.query.all():
-        e.start = e.start.astimezone(election.start.tzinfo)
-        e.end = e.end.astimezone(election.start.tzinfo)
+        start = e.start.astimezone(election.start.tzinfo)
+        end = e.end.astimezone(election.start.tzinfo)
         if (
-            e.start < election.start and e.end >= election.start or
-            election.start < e.start and election.end >= e.start
+            start < election.start and end >= election.start or
+            election.start < start and election.end >= start
         ):
             raise BadRequest("Invalid date and time.")
 
@@ -87,35 +87,49 @@ def get_results(data):
         raise BadRequest("Election is ongoing.")
 
     participants_q = Participant.query.filter_by(election_id=eid)
-    votes_q = Vote.query.filter_by(election_id=eid)
+    votes_q = Vote.query.filter_by(election_id=eid, invalid=None)
+    sq = (
+        votes_q
+        .with_entities(Vote.poll_number, func.count().label('votes'))
+        .group_by(Vote.poll_number)
+        .subquery()
+    )
 
     if e.individual:
         # Presidential elections
         total_votes = votes_q.count()
-        sq = (
-            votes_q
-            .with_entities(
-                Vote.poll_number,
-                func.round(func.count('*') / total_votes, 2).label('result'),
-            )
-            .group_by(Vote.poll_number)
-            .subquery()
-        )
+        votes = func.ifnull(sq.c.votes, 0)
         q = (
             participants_q
             .with_entities(
                 Participant.poll_number,
                 Participant.name,
-                func.ifnull(sq.c.result, 0).label('result'),  # Must relabel
+                func.round(votes / total_votes, 2).label('result'),
             )
             .outerjoin(sq, Participant.poll_number == sq.c.poll_number)
         )
-        participants = (p._asdict() for p in q)
+        participants = [p._asdict() for p in q]
+
     else:
         # Parliamentary elections
-        pass  # TODO
+        q = (
+            participants_q
+            .with_entities(
+                Participant.poll_number,
+                Participant.name,
+                func.ifnull(sq.c.votes, 0).label('votes'),
+                literal(0).label('result'),
+            )
+            .outerjoin(sq, Participant.poll_number == sq.c.poll_number)
+        )
+        participants = [p._asdict() for p in q]
 
-    invalid_votes = votes_q.filter(Vote.invalid != None)
+        # total_seats = 250
+        # threshold = 0.05
+        # while total_seats > 0:
+        #     break
+
+    invalid_votes = Vote.query.filter(Vote.invalid != None)
 
     return {'participants': participants, 'invalid_votes': invalid_votes}
 

@@ -26,6 +26,8 @@ if __name__ == '__main__':
             continue
 
         with app.app_context():
+            print(values, end="\t")
+
             now = datetime.now(config.TIMEZONE)
             e = (
                 Election.query
@@ -33,6 +35,7 @@ if __name__ == '__main__':
                 .first()  # TODO: What if there are multiple elections?
             )
             if not e:
+                print("No ongoing election")
                 continue
 
             invalid = None
@@ -44,6 +47,8 @@ if __name__ == '__main__':
                 .first()
             ):
                 invalid = "Invalid poll number."
+
+            print(invalid or "")
 
             vote = Vote(ballot_uuid=ballot_uuid, poll_number=poll_number,
                         user_jmbg=user_jmbg, invalid=invalid, election_id=e.id)
