@@ -29,9 +29,9 @@ if __name__ == '__main__':
             continue
 
         with app.app_context():
-            now = datetime.now(ZoneInfo('Europe/Belgrade'))  # TODO
-            print(values, '\n', now, Election.query.first().start, end="\t")
+            print(values, end="\t")
 
+            now = datetime.now(ZoneInfo('Europe/Belgrade'))  # TODO
             e = (
                 Election.query
                 .filter(Election.start <= now, now <= Election.end)

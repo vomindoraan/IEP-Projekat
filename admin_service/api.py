@@ -153,10 +153,10 @@ def get_results(data):
 extra_bp = Blueprint('extra', __name__)
 
 
-@extra_bp.get('/lookup')
-# @auth_jwt()
+@extra_bp.get('/stats')
+@auth_jwt()
 @produces(schemas.ElectionStats.MANY)
-def lookup():
+def election_stats():
     return (
         Election.query
         .with_entities(Election.id,

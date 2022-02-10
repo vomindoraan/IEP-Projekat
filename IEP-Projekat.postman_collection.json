@@ -298,12 +298,18 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{admin_url}}/getResults",
+					"raw": "{{admin_url}}/getResults?id=1",
 					"host": [
 						"{{admin_url}}"
 					],
 					"path": [
 						"getResults"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
 					]
 				}
 			},
@@ -328,12 +334,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{extra_url}}/lookup",
+					"raw": "{{extra_url}}/stats",
 					"host": [
 						"{{extra_url}}"
 					],
 					"path": [
-						"lookup"
+						"stats"
 					]
 				}
 			},
