@@ -84,7 +84,7 @@ class SQLAlchemyMixin(MM.SQLAlchemySchema, metaclass=SQLAlchemyMixinMeta):
 
 
 # TODO: What happens on dump?
-class CollapseErrorsMessagesMixin(BaseSchema):
+class CollapseErrorMessagesMixin(BaseSchema):
     messages = {
         'missing': "Field {data_key} is missing.",
         'null':    "Field {data_key} may not be null.",
@@ -195,7 +195,7 @@ class CollapseErrorsMessagesMixin(BaseSchema):
 
 # region API schemas
 
-class APIRequest(CollapseErrorsMessagesMixin, BaseSchema):
+class APIRequest(CollapseErrorMessagesMixin, BaseSchema):
     class Meta(BaseSchema.Meta):
         unknown = RAISE
 
